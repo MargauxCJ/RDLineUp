@@ -4,12 +4,7 @@ services:
       - ./api:/app
       - /app/node_modules
 
-  backoffice:
+  frontend:
     volumes:
-      - ./frontend/backoffice:/app
-      - /app/node_modules
-
-  frontoffice:
-    volumes:
-      - ./frontend/frontoffice:/app
+      - ./frontend:/app
       - /app/node_modules
