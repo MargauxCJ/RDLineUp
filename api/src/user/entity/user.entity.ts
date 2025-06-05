@@ -11,6 +11,7 @@ import {
 import {TeamEntity} from '../../team/entity/team.entity';
 import {EventEntity} from '../../event/entity/event.entity';
 import {GameEntity} from '../../game/entity/game.entity';
+import {IsEmail} from 'class-validator';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -24,7 +25,7 @@ export enum MemberPosition {
   JAMMER = 'jammer',
 }
 
-@Entity()
+@Entity('user')
 export class UserEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -38,11 +39,13 @@ export class UserEntity {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
+  @Column({ nullable: true })
+  imgProfile?: string;
 
   @Column({ type: 'enum', enum: UserRole, default: UserRole.MEMBER_USER })
   role: UserRole;
 
-  @Column({ type: 'enum', enum: UserRole, default: MemberPosition.BLOCKER })
+  @Column({ type: 'enum', enum: MemberPosition, default: MemberPosition.BLOCKER })
   defaultPosition: MemberPosition;
 
   @Column({ nullable: true })
@@ -60,7 +63,6 @@ export class UserEntity {
 
   @ManyToMany(() => GameEntity, (game) => game.players)
   games: GameEntity[]
-
 
   @BeforeInsert()
   emailToLowerCase() {

@@ -4,13 +4,16 @@ import {UserEntity} from '../../user/entity/user.entity';
 import {EventEntity} from '../../event/entity/event.entity';
 import {GameEntity} from '../../game/entity/game.entity';
 
-@Entity()
+@Entity('team')
 export class TeamEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
   name: string;
+
+  @Column({ nullable: true })
+  imgProfile?: string;
 
   @ManyToOne(() => ClubEntity, (club) => club.teams)
   @JoinColumn({ name: 'clubId' })

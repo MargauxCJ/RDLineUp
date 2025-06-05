@@ -20,6 +20,9 @@ export class ClubEntity {
   @Column({ nullable: true })
   imgProfile?: string;
 
+  @Column()
+  city: string;
+
   @OneToMany(() => TeamEntity, (team) => team.club)
   teams: TeamEntity[];
 

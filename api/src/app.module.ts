@@ -9,6 +9,9 @@ import { UserModule } from './user/user.module';
 import { TeamModule } from './team/team.module';
 import { EventModule } from './event/event.module';
 import { GameModule } from './game/game.module';
+import { LineUpModule } from './line-up/line-up.module';
+import { JamModule } from './jam/jam.module';
+import { PairModule } from './pair/pair.module';
 
 @Module({
   imports: [
@@ -19,6 +22,9 @@ import { GameModule } from './game/game.module';
     TeamModule,
     EventModule,
     GameModule,
+    LineUpModule,
+    JamModule,
+    PairModule,
   ],
   controllers: [AppController],
   providers: [AppService],

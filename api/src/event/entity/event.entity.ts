@@ -3,7 +3,7 @@ import {TeamEntity} from '../../team/entity/team.entity';
 import {UserEntity} from '../../user/entity/user.entity';
 import {GameEntity} from '../../game/entity/game.entity';
 
-@Entity()
+@Entity('event')
 export class EventEntity {
   @PrimaryGeneratedColumn()
   id: number;

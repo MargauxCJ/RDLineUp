@@ -5,17 +5,16 @@ import {
   Entity,
   JoinColumn,
   ManyToMany,
-  ManyToOne,
-  OneToMany,
+  ManyToOne, OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import {TeamEntity} from '../../team/entity/team.entity';
 import {EventEntity} from '../../event/entity/event.entity';
 import {UserEntity} from '../../user/entity/user.entity';
-import {PairEntity} from '../../pair/entity/pair.entity';
+import {JamEntity} from '../../jam/entity/jam.entity';
 
-@Entity('game')
-export class GameEntity {
+@Entity('lineup')
+export class LineUpEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -25,24 +24,10 @@ export class GameEntity {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  schedule: Date;
+  @OneToMany(() => JamEntity, (jam) => jam.lineUp)
+  jams: JamEntity[];
 
-  @ManyToOne(() => TeamEntity, (team) => team.games)
-  @JoinColumn({ name: 'teamId' })
-  team: TeamEntity;
 
-  @Column()
-  opponentTeam: string;
-
-  @ManyToOne(() => EventEntity, (event) => event.games)
-  event: EventEntity
-
-  @ManyToMany(() => UserEntity, (user) => user.games)
-  players: UserEntity[]
-
-  @OneToMany(() => PairEntity, (pair) => pair.game, { cascade: true })
-  pairs: PairEntity[];
 
   @BeforeInsert()
   addTimeStamp() {
