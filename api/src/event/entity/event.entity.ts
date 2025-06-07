@@ -1,21 +1,13 @@
-import {BeforeInsert, BeforeUpdate, Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn,} from 'typeorm';
+import {Column, Entity, ManyToMany, OneToMany,} from 'typeorm';
 import {TeamEntity} from '../../team/entity/team.entity';
 import {UserEntity} from '../../user/entity/user.entity';
 import {GameEntity} from '../../game/entity/game.entity';
+import {BaseEntity} from 'src/common/entities/base.entity';
 
 @Entity('event')
-export class EventEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class EventEntity extends BaseEntity{
   @Column()
   name: string;
-
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  createdAt: Date;
-
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  updatedAt: Date;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   startDate: Date;
@@ -31,14 +23,4 @@ export class EventEntity {
 
   @OneToMany(() => GameEntity, (game) => game.event)
   games: GameEntity
-
-  @BeforeInsert()
-  addTimeStamp() {
-    this.createdAt = new Date();
-  }
-
-  @BeforeUpdate()
-  updateTimeStamp() {
-    this.updatedAt = new Date();
-  }
 }

@@ -5,15 +5,10 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import {TeamEntity} from '../../team/entity/team.entity';
+import {BaseEntity} from 'src/common/entities/base.entity';
 
 @Entity('club')
-export class ClubEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  createdAt: Date;
-
+export class ClubEntity extends BaseEntity{
   @Column()
   name: string;
 
@@ -25,9 +20,4 @@ export class ClubEntity {
 
   @OneToMany(() => TeamEntity, (team) => team.club)
   teams: TeamEntity[];
-
-  @BeforeInsert()
-  addTimeStamp() {
-    this.createdAt = new Date();
-  }
 }

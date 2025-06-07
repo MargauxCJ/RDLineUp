@@ -13,18 +13,10 @@ import {TeamEntity} from '../../team/entity/team.entity';
 import {EventEntity} from '../../event/entity/event.entity';
 import {UserEntity} from '../../user/entity/user.entity';
 import {PairEntity} from '../../pair/entity/pair.entity';
+import {BaseEntity} from 'src/common/entities/base.entity';
 
 @Entity('game')
-export class GameEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  createdAt: Date;
-
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  updatedAt: Date;
-
+export class GameEntity extends BaseEntity {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   schedule: Date;
 
@@ -43,14 +35,4 @@ export class GameEntity {
 
   @OneToMany(() => PairEntity, (pair) => pair.game, { cascade: true })
   pairs: PairEntity[];
-
-  @BeforeInsert()
-  addTimeStamp() {
-    this.createdAt = new Date();
-  }
-
-  @BeforeUpdate()
-  updateTimeStamp() {
-    this.updatedAt = new Date();
-  }
 }

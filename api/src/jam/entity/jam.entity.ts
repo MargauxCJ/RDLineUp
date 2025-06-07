@@ -1,12 +1,11 @@
-import { UserEntity } from '../../user/entity/user.entity';
-import { PairEntity } from '../../pair/entity/pair.entity';
-import {Entity, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
+import {UserEntity} from '../../user/entity/user.entity';
+import {PairEntity} from '../../pair/entity/pair.entity';
+import {Entity, ManyToOne} from 'typeorm';
 import {LineUpEntity} from '../../line-up/entity/line-up.entity';
+import {BaseEntity} from 'src/common/entities/base.entity';
 
 @Entity('jam')
-export class JamEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+export class JamEntity extends BaseEntity {
 
   @ManyToOne(() => LineUpEntity, (lineup) => lineup.jams)
   lineUp: LineUpEntity;

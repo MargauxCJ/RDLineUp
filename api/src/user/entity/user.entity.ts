@@ -11,7 +11,7 @@ import {
 import {TeamEntity} from '../../team/entity/team.entity';
 import {EventEntity} from '../../event/entity/event.entity';
 import {GameEntity} from '../../game/entity/game.entity';
-import {IsEmail} from 'class-validator';
+import {BaseEntity} from 'src/common/entities/base.entity';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -25,19 +25,10 @@ export enum MemberPosition {
   JAMMER = 'jammer',
 }
 
-@Entity('user')
-export class UserEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+@Entity('member')
+export class UserEntity extends BaseEntity {
   @Column()
   password: string;
-
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  createdAt: Date;
-
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  updatedAt: Date;
 
   @Column({ nullable: true })
   imgProfile?: string;
@@ -67,15 +58,5 @@ export class UserEntity {
   @BeforeInsert()
   emailToLowerCase() {
     this.email = this.email.toLowerCase();
-  }
-
-  @BeforeInsert()
-  addTimeStamp() {
-    this.createdAt = new Date();
-  }
-
-  @BeforeUpdate()
-  updateTimeStamp() {
-    this.updatedAt = new Date();
   }
 }
