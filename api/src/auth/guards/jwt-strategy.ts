@@ -2,6 +2,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
+import {CurrentUserDto} from 'src/user/entity/dto/current-user.dto';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -13,7 +14,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
     console.log('JWT Secret:', configService.get('JWT_SECRET'));
   }
-  async validate(payload: any) {
+  async validate(payload: any): Promise<CurrentUserDto> {
     return {
       id: Number(payload.sub),
       email: payload.email,

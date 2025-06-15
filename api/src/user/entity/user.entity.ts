@@ -12,6 +12,7 @@ import {TeamEntity} from '../../team/entity/team.entity';
 import {EventEntity} from '../../event/entity/event.entity';
 import {GameEntity} from '../../game/entity/game.entity';
 import {BaseEntity} from 'src/common/entities/base.entity';
+import {Exclude} from 'class-transformer';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -28,6 +29,7 @@ export enum MemberPosition {
 @Entity('member')
 export class UserEntity extends BaseEntity {
   @Column()
+  @Exclude()
   password: string;
 
   @Column({ nullable: true })

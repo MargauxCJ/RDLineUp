@@ -10,7 +10,7 @@ export class AuthService {
 
   generateJWT(user: UserEntity): Observable<string> {
     const payload = {
-      sub: user.id,  // Utilisation de 'sub' pour l'ID
+      sub: user.id,
       email: user.email,
       role: user.role,
     };

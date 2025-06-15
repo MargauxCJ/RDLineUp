@@ -11,10 +11,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MessageService } from 'src/common/services/message/message.service';
 import {catchError, from, map, Observable, switchMap, throwError} from 'rxjs';
-import {instanceToPlain} from 'class-transformer';
+import {instanceToPlain, plainToInstance} from 'class-transformer';
 import {AuthService} from 'src/auth/services/auth.service';
 import {CreateUserDto} from 'src/user/entity/dto/create-user.dto';
 import {LoginDto} from 'src/user/entity/dto/login.dto';
+import {CurrentUserDto} from 'src/user/entity/dto/current-user.dto';
 
 @Injectable()
 export class UserService extends BaseService<UserEntity> {
@@ -73,7 +74,7 @@ export class UserService extends BaseService<UserEntity> {
     );
   }
 
-  findCurrentUser(id: number): Observable<UserEntity> {
+  findCurrentUser(id: number): Observable<CurrentUserDto> {
     return from(
       this.userRepository
         .createQueryBuilder('user')
@@ -86,7 +87,13 @@ export class UserService extends BaseService<UserEntity> {
             this.messageService.get('NOT_FOUND', 'Utilisateur'),
           );
         }
-        return instanceToPlain(user);
+
+        // Conversion UserEntity -> CurrentUserDto
+        const currentUserDto = plainToInstance(CurrentUserDto, user, {
+          excludeExtraneousValues: true, // active Exclude/Expose
+        });
+
+        return currentUserDto;
       }),
       catchError((err) => {
         if (err instanceof HttpException) {
@@ -100,7 +107,7 @@ export class UserService extends BaseService<UserEntity> {
             ),
         );
       }),
-    ) as Observable<UserEntity>;
+    );
   }
 
 
