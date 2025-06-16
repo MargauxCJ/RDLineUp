@@ -1,16 +1,23 @@
 import {Injectable} from '@nestjs/common';
 import {DataSource} from 'typeorm';
+import {ClubSeeder} from 'src/database/seeder/seeders/club.seeder';
+import {TeamSeeder} from 'src/database/seeder/seeders/team.seeder';
+import {MemberSeeder} from 'src/database/seeder/seeders/member.seeder';
 
 @Injectable()
 export class SeederService {
   constructor(
-    // private readonly categorySeeder: CategorySeeder,
+    private readonly clubSeeder: ClubSeeder,
+    private readonly teamSeeder: TeamSeeder,
+    private readonly memberSeeder: MemberSeeder,
     private readonly dataSource: DataSource,
   ) {}
 
   async seed() {
     await this.clearAll();
-    // await this.categorySeeder.run();
+    await this.clubSeeder.run();
+    await this.teamSeeder.run();
+    await this.memberSeeder.run();
     console.log('✅ Seeding terminé');
   }
 
@@ -19,16 +26,14 @@ export class SeederService {
 
     await this.dataSource.query(`
       TRUNCATE TABLE
-        category_entity_bands_band,
-        est_ent_str_col_of_str_ent,
-        establishment_entity_structure_collaborators_structure_entity,
-        structure_entity_artistes_band,
-        structure_entity_collaborators_of_structure_entity,
-        band,
-        establishment_entity,
-        structure_entity,
-        category_entity,
-        user_entity
+        club,
+        event,
+        game,
+        jam,
+        lineup,
+        member,
+        pair,
+        team
       RESTART IDENTITY CASCADE;
     `);
 

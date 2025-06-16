@@ -44,6 +44,9 @@ export class UserEntity extends BaseEntity {
   @Column({ nullable: true })
   surname: string;
 
+  @Column({nullable: true})
+  jerseyNum: string;
+
   @Column({ unique: true })
   email: string;
 

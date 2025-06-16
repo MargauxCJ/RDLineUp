@@ -19,8 +19,8 @@ export class EventEntity extends BaseEntity{
   teams: TeamEntity[];
 
   @ManyToMany(() => UserEntity, (user) => user.events)
-  presentMembers: UserEntity[]
+  presentMembers: UserEntity[];
 
   @OneToMany(() => GameEntity, (game) => game.event)
-  games: GameEntity
+  games: GameEntity[];
 }
