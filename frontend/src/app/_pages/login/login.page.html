@@ -1,0 +1,27 @@
+<ion-content [fullscreen]="true">
+  <div class="login-container">
+    <ion-card style="width: 30%">
+      <ion-grid>
+        <form [formGroup]="loginForm" (ngSubmit)="login()">
+          <ion-row>
+            <ion-col>
+              <ion-input mode="md" shape="round" formControlName="login" label="Email *" label-placement="floating" fill="outline" type="email" placeholder="Email" [required]="true"></ion-input>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col>
+              <ion-input mode="md" shape="round" formControlName="password" label="Mot de passe *" label-placement="floating" fill="outline" type="password" placeholder="Mot de passe" [required]="true"></ion-input>
+            </ion-col>
+          </ion-row>
+
+          <ion-row style="padding-bottom: 0">
+            <ion-col>
+              <ion-button shape="round" type="submit">Connexion</ion-button>
+            </ion-col>
+          </ion-row>
+        </form>
+      </ion-grid>
+    </ion-card>
+  </div>
+</ion-content>

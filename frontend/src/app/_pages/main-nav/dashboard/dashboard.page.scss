@@ -1,0 +1,67 @@
+.hi-user {
+  font-size: 20px;
+  margin-left: 8px;
+  margin-bottom: 32px;
+}
+
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 16px;
+
+  .stat-game-played {
+    grid-column: span 2 / span 2;
+  }
+
+  .stat-game-won {
+    grid-column: span 2 / span 2;
+    grid-column-start: 3;
+  }
+
+  .stat-member-num {
+    grid-column: span 2 / span 2;
+    grid-column-start: 5;
+  }
+
+  .games-calendar {
+    grid-column: span 6 / span 6;
+    grid-row: span 2 / span 2;
+    grid-column-start: 7;
+  }
+
+  .last-training {
+    grid-column: span 6 / span 6;
+    grid-row: span 2 / span 2;
+    grid-row-start: 2;
+  }
+
+  .some-stat-1 {
+    grid-column: span 3 / span 3;
+    grid-column-start: 7;
+    grid-row-start: 3;
+  }
+
+  .some-stat-2 {
+    grid-column: span 3 / span 3;
+    grid-column-start: 10;
+    grid-row-start: 3;
+  }
+
+  .stat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    ion-icon {
+      font-size: 24px;
+    }
+
+    .number {
+      font-size: 24px;
+      font-weight: bold;
+    }
+  }
+}
+

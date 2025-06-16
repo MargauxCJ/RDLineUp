@@ -4,9 +4,11 @@ import {Exclude, Expose} from 'class-transformer';
 
 @Exclude()
 export class CurrentUserDto {
-
   @Expose()
   id: number;
+
+  @Expose()
+  surname: string;
 
   @Expose()
   @IsEmail()

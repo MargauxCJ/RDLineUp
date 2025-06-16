@@ -21,11 +21,11 @@ export class MemberSeeder {
       return;
     }
 
-    // const lesPetroleusesTeam = await teamRepo.findOneBy({name: 'Les Pétroleuses'});
-    // if (!leopardAvengersTeam) {
-    //   console.error('Club "Les Pétroleuses" not found, please run TeamSeeder first.');
-    //   return;
-    // }
+    const lesPetroleusesTeam = await teamRepo.findOneBy({name: 'Les Pétroleuses'});
+    if (!leopardAvengersTeam) {
+      console.error('Club "Les Pétroleuses" not found, please run TeamSeeder first.');
+      return;
+    }
 
     const filePath = join(__dirname, '..', 'imports', 'member_leopard.xlsx');
     const workbook = XLSX.readFile(filePath);
@@ -52,13 +52,26 @@ export class MemberSeeder {
         jerseyNum: row.jerseyNum,
         password: hashedPassword,
         role: UserRole.MEMBER_USER,
-        team: leopardAvengersTeam,
+        teams: [leopardAvengersTeam],
       });
 
       await userRepo.save(user);
 
       console.log(`Member "${usernameLower}" created`);
     }
+
+    const coach = userRepo.create({
+      surname: 'Praline',
+      email: `praline@test.fr`,
+      jerseyNum: '1991',
+      password: hashedPassword,
+      role: UserRole.COACH_USER,
+      teams: [leopardAvengersTeam, lesPetroleusesTeam],
+    });
+
+    await userRepo.save(coach);
+
+    console.log(`Coach "Praline" created`);
   }
 }
 

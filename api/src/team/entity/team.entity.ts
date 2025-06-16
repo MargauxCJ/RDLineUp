@@ -18,7 +18,7 @@ export class TeamEntity extends BaseEntity {
   @JoinColumn({ name: 'clubId' })
   club: ClubEntity;
 
-  @OneToMany(() => UserEntity, (user) => user.team)
+  @ManyToMany(() => UserEntity, (user) => user.teams)
   members: UserEntity[];
 
   @ManyToMany(() => EventEntity, (event) => event.teams)

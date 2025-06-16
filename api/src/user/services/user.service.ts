@@ -8,7 +8,7 @@ import {
 import { BaseService } from 'src/common/services/base.service';
 import { UserEntity } from '../entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import {In, Repository} from 'typeorm';
 import { MessageService } from 'src/common/services/message/message.service';
 import {catchError, from, map, Observable, switchMap, throwError} from 'rxjs';
 import {instanceToPlain, plainToInstance} from 'class-transformer';
@@ -16,12 +16,15 @@ import {AuthService} from 'src/auth/services/auth.service';
 import {CreateUserDto} from 'src/user/entity/dto/create-user.dto';
 import {LoginDto} from 'src/user/entity/dto/login.dto';
 import {CurrentUserDto} from 'src/user/entity/dto/current-user.dto';
+import {TeamEntity} from 'src/team/entity/team.entity';
 
 @Injectable()
 export class UserService extends BaseService<UserEntity> {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(TeamEntity)
+    private readonly teamRepository: Repository<TeamEntity>,
     messageService: MessageService,
     private authService: AuthService,
   ) {
@@ -58,21 +61,46 @@ export class UserService extends BaseService<UserEntity> {
   public createUser(user: CreateUserDto): Observable<any> {
     return this.authService.hashPassword(user.password).pipe(
       switchMap((passwordHash: string) => {
-        const newUser = this.userRepository.create({
+        const userToCreate = {
           ...user,
           password: passwordHash,
-        });
+        };
 
-        return from(this.userRepository.save(newUser)).pipe(
-          map((savedUser) => {
-            const { password, ...result } = savedUser;
-            return instanceToPlain(result);
-          }),
-          this.handleError<any>(),
-        );
+        if (user.teamIds && user.teamIds.length > 0) {
+          return from(
+            this.teamRepository.find({
+              where: { id: In(user.teamIds) },
+            }),
+          ).pipe(
+            switchMap((teams) => {
+              const newUser = this.userRepository.create({
+                ...userToCreate,
+                teams,
+              });
+
+              return from(this.userRepository.save(newUser)).pipe(
+                map((savedUser) => {
+                  const { password, ...result } = savedUser;
+                  return instanceToPlain(result);
+                }),
+                this.handleError<any>(),
+              );
+            }),
+          );
+        } else {
+          const newUser = this.userRepository.create(userToCreate);
+          return from(this.userRepository.save(newUser)).pipe(
+            map((savedUser) => {
+              const { password, ...result } = savedUser;
+              return instanceToPlain(result);
+            }),
+            this.handleError<any>(),
+          );
+        }
       }),
     );
   }
+
 
   findCurrentUser(id: number): Observable<CurrentUserDto> {
     return from(

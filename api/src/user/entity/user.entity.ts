@@ -3,7 +3,7 @@ import {
   BeforeUpdate,
   Column,
   Entity,
-  JoinColumn,
+  JoinColumn, JoinTable,
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -41,7 +41,7 @@ export class UserEntity extends BaseEntity {
   @Column({ type: 'enum', enum: MemberPosition, default: MemberPosition.BLOCKER })
   defaultPosition: MemberPosition;
 
-  @Column({ nullable: true })
+  @Column()
   surname: string;
 
   @Column({nullable: true})
@@ -50,12 +50,12 @@ export class UserEntity extends BaseEntity {
   @Column({ unique: true })
   email: string;
 
-  @ManyToOne(() => UserEntity, (user) => user.team)
-  @JoinColumn({ name: 'teamId' })
-  team: TeamEntity;
+  @ManyToMany(() => TeamEntity, (team) => team.members)
+  @JoinTable()
+  teams: TeamEntity[];
 
   @ManyToMany(() => EventEntity, (event) => event.presentMembers)
-  events: UserEntity[]
+  events: EventEntity[]
 
   @ManyToMany(() => GameEntity, (game) => game.players)
   games: GameEntity[]

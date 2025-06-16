@@ -1,0 +1,74 @@
+<ion-content [fullscreen]="true" class="ion-content-padding">
+  @if (authService.currentUser$|async; as currentUser) {
+    <h1>Tableau de bord</h1>
+
+    <div style="margin-bottom: 32px">
+    <ion-text color="primary" class="hi-user">Salut {{currentUser.surname}}</ion-text>
+    </div>
+    <div class="dashboard-grid">
+
+        <div class="stat-game-played">
+          <ion-card class="stat-card">
+            <ion-icon color="dark" name="flag"></ion-icon>
+            <p><ion-text color="medium">Matchs joués en 2025</ion-text></p>
+            <ion-text color="dark" class="number">23</ion-text>
+          </ion-card>
+        </div>
+        <div class="stat-game-won">
+            <ion-card class="stat-card">
+              <ion-icon color="dark" name="flag"></ion-icon>
+              <p><ion-text color="medium">Matchs gagnés en 2025</ion-text></p>
+              <ion-text color="dark" class="number">23</ion-text>
+            </ion-card>
+        </div>
+        <div class="stat-member-num">
+            <ion-card class="stat-card">
+              <ion-icon color="dark" name="people"></ion-icon>
+              <p><ion-text color="medium">Nombre de membre du club</ion-text></p>
+              <ion-text color="dark" class="number">52</ion-text>
+            </ion-card>
+        </div>
+        <div class="games-calendar">
+          <ion-card>
+            <div class="title-card">
+              <ion-icon name="calendar" color="dark"></ion-icon>
+              <ion-text color="dark">
+                <h2>Prochains matchs</h2>
+              </ion-text>
+            </div>
+
+          </ion-card>
+        </div>
+        <div class="last-training">
+          <ion-card>
+            <div class="title-card">
+              <ion-icon name="barbell" color="dark"></ion-icon>
+              <ion-text color="dark">
+                <h2>Derniers entraînements</h2>
+              </ion-text>
+            </div>
+          </ion-card>
+        </div>
+        <div class="some-stat-1">
+          <ion-card>
+            <div class="title-card">
+              <ion-icon name="stats-chart" color="dark"></ion-icon>
+              <ion-text color="dark">
+                <h2>Des stats ?</h2>
+              </ion-text>
+            </div>
+          </ion-card>
+        </div>
+        <div class="some-stat-2">
+          <ion-card>
+            <div class="title-card">
+              <ion-icon name="stats-chart" color="dark"></ion-icon>
+              <ion-text color="dark">
+                <h2>D'autres stats ?</h2>
+              </ion-text>
+            </div>
+          </ion-card>
+        </div>
+    </div>
+  }
+</ion-content>

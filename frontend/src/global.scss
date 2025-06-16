@@ -34,4 +34,162 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+//@import '@ionic/angular/css/palettes/dark.system.css';
+
+
+//LIGHT (300)
+@font-face {
+  font-family: 'WorkSans';
+  font-weight: 300;
+  font-style: normal;
+  src: url("./assets/fonts/WorkSans/WorkSans-Light.ttf");
+}
+
+//LIGHT-ITALIC (300)
+@font-face {
+  font-family: 'WorkSans';
+  font-weight: 300;
+  font-style: italic;
+  src: url("./assets/fonts/WorkSans/WorkSans-LightItalic.ttf");
+}
+
+//REGULAR (400)
+@font-face {
+  font-family: 'WorkSans';
+  font-weight: normal;
+  font-style: normal;
+  src: url("./assets/fonts/WorkSans/WorkSans-Regular.ttf");
+}
+
+//REGULAR-ITALIC (400)
+@font-face {
+  font-family: 'WorkSans';
+  font-weight: normal;
+  font-style: italic;
+  src: url("./assets/fonts/WorkSans/WorkSans-Italic.ttf");
+}
+
+//MEDIUM (500)
+@font-face {
+  font-family: 'WorkSans';
+  font-weight: 500;
+  font-style: normal;
+  src: url("./assets/fonts/WorkSans/WorkSans-Medium.ttf");
+}
+
+//MEDIUM-ITALIC (500)
+@font-face {
+  font-family: 'WorkSans';
+  font-weight: 500;
+  font-style: italic;
+  src: url("./assets/fonts/WorkSans/WorkSans-MediumItalic.ttf");
+}
+
+//BOLD (700)
+@font-face {
+  font-family: 'WorkSans';
+  font-weight: 700;
+  font-style: normal;
+  src: url("./assets/fonts/WorkSans/WorkSans-Bold.ttf");
+}
+
+//BOLD-ITALIC (700)
+@font-face {
+  font-family: 'WorkSans';
+  font-weight: 700;
+  font-style: italic;
+  src: url("./assets/fonts/WorkSans/WorkSans-BoldItalic.ttf");
+}
+
+//text font
+*:not(ion-icon) {
+  font-family: 'WorkSans', sans-serif;
+}
+
+ion-text {
+  font-size: 16px;
+}
+
+strong {
+  font-weight: bold !important;
+}
+
+//Title hierarchy
+
+h1 {
+  font-family: 'WorkSans', sans-serif;
+  font-size: 48px !important;
+  font-weight: 700 !important;
+  margin:0;
+}
+
+h2 {
+  font-family: 'WorkSans', sans-serif;
+  font-size: 24px !important;
+  font-weight: 700 !important;
+  margin:0;
+}
+
+h3 {
+  font-family: 'WorkSans', sans-serif;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  color: var(--ion-color-primary);
+  margin:0;
+}
+
+.ion-content-padding {
+  --padding-top: 32px;
+  --padding-bottom: 32px;
+  --padding-start: 32px;
+  --padding-end: 32px;
+}
+
+ion-card {
+  --background: var(--ion-color-light);
+  border-radius: 16px;
+  box-shadow: -1px 4px 7px 2px rgba(var(--ion-color-dark),0.15);
+  -webkit-box-shadow: -1px 4px 7px 2px rgba(var(--ion-color-dark),0.15);
+  -moz-box-shadow: -1px 4px 7px 2px rgba(var(--ion-color-dark),0.15);
+  padding: 24px;
+  margin: 0;
+}
+
+.title-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  ion-icon {
+    font-size: 24px;
+    margin-right: 8px;
+  }
+}
+
+.login-container {
+  width: 100%;
+  height: 100%;
+  margin: auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+
+  ion-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    img {
+      margin-bottom: 32px;
+    }
+
+    ion-row {
+      width: 100%;
+    }
+
+    .forget-password {
+      text-decoration: underline;
+    }
+  }
+}

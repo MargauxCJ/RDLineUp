@@ -1,0 +1,32 @@
+
+ion-grid, ion-row {
+  width: 100%;
+}
+
+ion-grid {
+  padding: 30px;
+}
+
+ion-row {
+  padding-bottom: 25px;
+}
+
+ion-input {
+  width: 100%
+}
+
+ion-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.title-app {
+  font-size: 50px;
+  font-weight: 700;
+  color: var(--ion-text-color);
+  span {
+    color: var(--ion-color-primary);
+  }
+}
