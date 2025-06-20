@@ -1,9 +1,4 @@
-import {
-  BeforeInsert,
-  Column,
-  Entity, OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import {Column, Entity, OneToMany,} from 'typeorm';
 import {TeamEntity} from '../../team/entity/team.entity';
 import {BaseEntity} from 'src/common/entities/base.entity';
 

@@ -1,4 +1,6 @@
 import {AbstractEntity, EntityInterface} from '../entity';
+import {Team} from '../teams/team.model';
+import {Game} from '../games/game.model';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -20,22 +22,22 @@ export interface UserInterface extends EntityInterface {
   role: UserRole;
   defaultPosition: MemberPosition;
   jerseyNum?: string;
-  // team: Team;
-  // events: Event[];
-  // games: Game[];
+  teams: Team[];
+  events: Event[];
+  games: Game[];
 }
 
 export class User extends AbstractEntity implements UserInterface {
-  surname: string = null;
-  email: string = null;
-  password?: string = null;
-  imgProfile?: string = null;
-  role: UserRole = null;
-  defaultPosition: MemberPosition = null;
-  jerseyNum?: string = null;
-  // team: Team;
-  // events: Event[];
-  // games: Game[];
+  public surname: string = null;
+  public email: string = null;
+  public password?: string = null;
+  public imgProfile?: string = null;
+  public role: UserRole = null;
+  public defaultPosition: MemberPosition = null;
+  public jerseyNum?: string = null;
+  public teams: Team[];
+  public events: Event[];
+  public games: Game[];
 
   public static override getEntityName(): 'user' {
     return 'user';
