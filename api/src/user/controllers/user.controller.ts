@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards} from '@nestjs/common';
+import {Body, Controller, Get, Param, ParseIntPipe, Post, Query, UseGuards} from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import { map, Observable } from 'rxjs';
 import {UserEntity, UserRole} from '../entity/user.entity';
@@ -9,6 +9,9 @@ import {JwtAuthGuard} from 'src/auth/guards/jwt-guard';
 import {CurrentUserDto} from 'src/user/entity/dto/current-user.dto';
 import {RolesGuard} from 'src/auth/guards/roles.guard';
 import {hasRoles} from 'src/auth/decorator/roles.decorator';
+import {UsersListDto} from 'src/user/entity/dto/users-list.dto';
+import {PaginatedResultDto} from 'src/common/entities/paginatedResult.dto';
+import {PaginationQueryDto} from 'src/common/entities/paginationQuery.dto';
 
 @Controller('users')
 export class UserController {
@@ -36,8 +39,20 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  findAll(): Observable<UserEntity[]> {
-    return this.userService.findAll();
+  findAll(): Observable<UsersListDto[]> {
+    return this.userService.findAll(UsersListDto, ['teams']);
+  }
+
+  @Get('paginated')
+  findAllPaginated(
+    @Query() paginationQuery: PaginationQueryDto,
+  ): Observable<PaginatedResultDto<UsersListDto>> {
+    return this.userService.findAllPaginated(
+      UsersListDto,
+      paginationQuery.page,
+      paginationQuery.limit,
+      ['teams'],
+    );
   }
 
   @Get(':id')

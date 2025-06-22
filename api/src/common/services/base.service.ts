@@ -7,7 +7,8 @@ import { DeepPartial, FindOptionsWhere, Repository } from 'typeorm';
 import { catchError, from, map, Observable, switchMap, throwError } from 'rxjs';
 import { MessageService } from 'src/common/services/message/message.service';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
-import { instanceToPlain } from 'class-transformer';
+import {ClassConstructor, instanceToPlain, plainToInstance} from 'class-transformer';
+import {PaginatedResultDto} from 'src/common/entities/paginatedResult.dto';
 
 export class BaseService<T> {
   constructor(
@@ -16,12 +17,40 @@ export class BaseService<T> {
     private readonly entityLabel: string,
   ) {}
 
-  public findAll(): Observable<any[]> {
-    return from(this.repository.find()).pipe(
-      map((entities) => this.mapToPlain(entities)),
-      this.handleError<any[]>(),
+  public findAll<V>(
+    dtoClass?: ClassConstructor<V>,
+    relations: string[] = []
+  ): Observable<V[]> {
+    return from(this.repository.find({ relations })).pipe(
+      map((entities) => this.mapToPlain(entities, dtoClass)),
+      catchError((error) => {
+        throw error;
+      })
     );
   }
+
+  public findAllPaginated<V>(
+    dtoClass: ClassConstructor<V>,
+    page: number = 1,
+    limit: number = 10,
+    relations: string[] = []
+  ): Observable<PaginatedResultDto<V>> {
+    const skip = (page - 1) * limit;
+
+    return from(
+      this.repository.findAndCount({
+        skip,
+        take: limit,
+        relations,
+      })
+    ).pipe(
+      map(([entities, total]) => {
+        const data = entities.map(e => plainToInstance(dtoClass, e));
+        return new PaginatedResultDto(data, total, page, limit);
+      }),
+    );
+  }
+
 
   public findOneByField<K extends keyof T>(
     field: K,
@@ -97,7 +126,16 @@ export class BaseService<T> {
     });
   }
 
-  protected mapToPlain(entityOrEntities: any): any {
-    return instanceToPlain(entityOrEntities);
+  protected mapToPlain<V>(data: T | T[], dtoClass?: ClassConstructor<V>): any {
+    if (dtoClass) {
+      if (Array.isArray(data)) {
+        return plainToInstance(dtoClass, data, { exposeUnsetFields: false })
+          .map((dto) => instanceToPlain(dto));
+      } else {
+        const dto = plainToInstance(dtoClass, data, { exposeUnsetFields: false });
+        return instanceToPlain(dto);
+      }
+    }
+    return instanceToPlain(data);
   }
 }
