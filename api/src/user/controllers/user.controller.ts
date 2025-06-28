@@ -1,14 +1,11 @@
 import {Body, Controller, Get, Param, ParseIntPipe, Post, Query, UseGuards} from '@nestjs/common';
-import { UserService } from '../services/user.service';
-import { map, Observable } from 'rxjs';
-import {UserEntity, UserRole} from '../entity/user.entity';
-import { CreateUserDto } from 'src/user/entity/dto/create-user.dto';
-import { LoginDto } from 'src/user/entity/dto/login.dto';
+import {UserService} from '../services/user.service';
+import {map, Observable} from 'rxjs';
+import {CreateUserDto} from 'src/user/entity/dto/create-user.dto';
+import {LoginDto} from 'src/user/entity/dto/login.dto';
 import {CurrentUser} from 'src/auth/decorator/current-user.decorator';
 import {JwtAuthGuard} from 'src/auth/guards/jwt-guard';
 import {CurrentUserDto} from 'src/user/entity/dto/current-user.dto';
-import {RolesGuard} from 'src/auth/guards/roles.guard';
-import {hasRoles} from 'src/auth/decorator/roles.decorator';
 import {UsersListDto} from 'src/user/entity/dto/users-list.dto';
 import {PaginatedResultDto} from 'src/common/entities/paginatedResult.dto';
 import {PaginationQueryDto} from 'src/common/entities/paginationQuery.dto';

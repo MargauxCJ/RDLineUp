@@ -1,5 +1,5 @@
 import {Exclude, Expose, Type} from 'class-transformer';
-import {UserRole} from 'src/user/entity/user.entity';
+import {MemberPosition, UserRole} from 'src/user/entity/user.entity';
 import {TeamListSubDto} from 'src/team/entity/dto/team-list-sub.dto';
 
 @Exclude()
@@ -14,10 +14,16 @@ export class UsersListDto {
   email: string;
 
   @Expose()
+  createdAt: string;
+
+  @Expose()
   jerseyNum: string;
 
   @Expose()
   role: UserRole;
+
+  @Expose()
+  defaultPosition: MemberPosition;
 
   @Expose()
   @Type(() => TeamListSubDto)

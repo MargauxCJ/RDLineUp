@@ -106,37 +106,29 @@ export class UserService extends BaseService<UserEntity> {
     return from(
       this.userRepository
         .createQueryBuilder('user')
+        .leftJoinAndSelect('user.teams', 'team')
+        .leftJoinAndSelect('team.club', 'club')
         .where('user.id = :id', { id })
         .getOne(),
     ).pipe(
-      map((user) => {
+      map(user => {
         if (!user) {
-          throw new NotFoundException(
-            this.messageService.get('NOT_FOUND', 'Utilisateur'),
-          );
+          throw new NotFoundException(this.messageService.get('NOT_FOUND', 'Utilisateur'));
         }
 
-        // Conversion UserEntity -> CurrentUserDto
-        const currentUserDto = plainToInstance(CurrentUserDto, user, {
-          excludeExtraneousValues: true, // active Exclude/Expose
-        });
-
-        return currentUserDto;
+        // Utiliser la méthode mapToPlain pour convertir l'entité en DTO
+        return this.mapToPlain(user, CurrentUserDto);
       }),
-      catchError((err) => {
-        if (err instanceof HttpException) {
-          return throwError(() => err);
-        }
+      catchError(err => {
+        if (err instanceof HttpException) return throwError(() => err);
+
         console.error(err);
-        return throwError(
-          () =>
-            new InternalServerErrorException(
-              this.messageService.get('SERVER_ERROR'),
-            ),
-        );
+        return throwError(() => new InternalServerErrorException(this.messageService.get('SERVER_ERROR')));
       }),
     );
   }
+
+
 
 
   validateUser(email: string, password: string): Observable<UserEntity> {

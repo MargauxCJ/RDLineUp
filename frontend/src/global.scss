@@ -120,14 +120,14 @@ h1 {
   font-family: 'WorkSans', sans-serif;
   font-size: 44px !important;
   font-weight: 700 !important;
-  margin:0;
+  margin: 0;
 }
 
 h2 {
   font-family: 'WorkSans', sans-serif;
   font-size: 24px !important;
   font-weight: 700 !important;
-  margin:0;
+  margin: 0;
 }
 
 h3 {
@@ -135,7 +135,7 @@ h3 {
   font-size: 20px !important;
   font-weight: 700 !important;
   color: var(--ion-color-primary);
-  margin:0;
+  margin: 0;
 }
 
 .ion-content-padding {
@@ -148,9 +148,9 @@ h3 {
 ion-card {
   --background: var(--ion-color-light);
   border-radius: 16px;
-  box-shadow: -1px 4px 7px 2px rgba(var(--ion-color-dark),0.15);
-  -webkit-box-shadow: -1px 4px 7px 2px rgba(var(--ion-color-dark),0.15);
-  -moz-box-shadow: -1px 4px 7px 2px rgba(var(--ion-color-dark),0.15);
+  box-shadow: -1px 4px 7px 2px rgba(var(--ion-color-dark), 0.15);
+  -webkit-box-shadow: -1px 4px 7px 2px rgba(var(--ion-color-dark), 0.15);
+  -moz-box-shadow: -1px 4px 7px 2px rgba(var(--ion-color-dark), 0.15);
   padding: 24px;
   margin: 0;
 }
@@ -192,4 +192,70 @@ ion-card {
       text-decoration: underline;
     }
   }
+}
+
+.card-list {
+  padding: 16px;
+  border-radius: 15px;
+  --color: var(--ion-color-dark);
+
+  .header-list {
+    border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.1);
+    text-transform: uppercase;
+    font-weight: bold;
+
+    ion-col {
+      padding: 0 0 16px 0;
+    }
+  }
+
+  .row-list {
+    cursor: pointer;
+    border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.1);
+  }
+
+  ion-col {
+    //padding: 16px 48px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .action-col {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .paginator {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+
+    ion-icon {
+      font-size: 24px;
+    }
+  }
+}
+
+
+//BUTTONS
+
+ion-fab-button {
+
+}
+
+.primary-fab-button {
+  --box-shadow: none;
+  --background: rgba(var(--ion-color-fab-primary-rgb), 0.5);
+  --color: var(--ion-color-primary);
+}
+
+.delete-fab-button {
+  --box-shadow: none;
+  --background: rgba(var(--ion-color-danger-rgb), 0.1);
+  --color: var(--ion-color-danger);
 }

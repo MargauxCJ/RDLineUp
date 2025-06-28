@@ -1,6 +1,7 @@
 import {IsEmail, IsEnum} from 'class-validator';
 import {UserRole} from 'src/user/entity/user.entity';
-import {Exclude, Expose} from 'class-transformer';
+import {Exclude, Expose, Type} from 'class-transformer';
+import {TeamListSubDto} from 'src/team/entity/dto/team-list-sub.dto';
 
 @Exclude()
 export class CurrentUserDto {
@@ -17,4 +18,12 @@ export class CurrentUserDto {
   @IsEnum(UserRole)
   @Expose()
   role: string;
+
+  @Expose()
+  @Type(() => TeamListSubDto)
+  teams: TeamListSubDto[];
+  @Expose()
+  get teamIds(): number[] {
+    return this.teams?.map(t => t.id) ?? [];
+  }
 }
