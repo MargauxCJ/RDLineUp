@@ -1,26 +1,21 @@
-import {Inject, Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, Observable, of} from 'rxjs';
-import {map, tap} from 'rxjs/operators';
+import {BehaviorSubject, map, Observable, tap} from 'rxjs';
+import {TokenService} from './token.service';
+import {MemberService} from '../api/member.service';
 import {Router} from '@angular/router';
-import {User} from '../../_entities/users/user.model';
-import {DYNAMIC_ENVIRONMENT, DynamicEnvironment} from '../../../environments/dynamic-environment';
-import {ApiService} from '../api.service';
 import {ToastService} from '../toast.service';
-import {jwtDecode, JwtPayload} from 'jwt-decode';
+import {User} from '../../_entities/users/user.model';
+import {Injectable} from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl: string = this.environment.apiUrl;
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(
-    @Inject(DYNAMIC_ENVIRONMENT) private environment: DynamicEnvironment,
-    private http: HttpClient,
-    private apiService: ApiService,
+    private tokenService: TokenService,
+    private userService: MemberService,  // ou UserService, qui étend CrudService<User>
     private router: Router,
     private toastService: ToastService,
   ) {
@@ -28,58 +23,36 @@ export class AuthService {
   }
 
   private loadCurrentUser() {
-    if (!this.isLoggedIn()) {
+    if (!this.tokenService.isTokenValid()) {
       this.currentUserSubject.next(null);
       return;
     }
-    this.getCurrentUser().subscribe({
+    this.userService.getCurrentUser().subscribe({
       next: user => this.currentUserSubject.next(user),
       error: () => this.currentUserSubject.next(null),
     });
   }
 
-  public login(email: string, password: string): Observable<void> {
-    return this.http.post<any>(`${this.apiUrl}users/login`, { email, password }).pipe(
-      tap(response => localStorage.setItem('userToken', response.access_token)),
+  login(email: string, password: string): Observable<void> {
+    return this.userService.login(email, password).pipe(
+      tap(token => this.tokenService.setToken(token)),
       tap(() => this.loadCurrentUser()),
       map(() => void 0)
     );
   }
 
-  public getCurrentUser(): Observable<User> {
-    return this.http.get<User>(`${this.apiUrl}users/current-user`);
-  }
-
-  isLoggedIn(): boolean {
-    const token = localStorage.getItem('userToken');
-    if (!token) return false;
-
-    try {
-      const decoded = jwtDecode<JwtPayload>(token);
-      const currentTime = Math.floor(Date.now() / 1000);
-      if (decoded.exp && decoded.exp > currentTime) {
-        return true;
-      } else {
-        this.logout();
-        return false;
-      }
-    } catch {
-      this.logout();
-      return false;
-    }
-  }
-
   logout() {
-    localStorage.removeItem('userToken');
+    this.tokenService.removeToken();
     this.currentUserSubject.next(null);
     this.router.navigateByUrl('/login').then();
     this.toastService.presentToast('Vous êtes déconnecté(e)');
   }
 
-  public getUserRole(): string {
-    const token = localStorage.getItem('userToken');
-    if (!token) return '';
-    const decoded: any = jwtDecode(token);
-    return decoded.role;
+  isLoggedIn(): boolean {
+    return this.tokenService.isTokenValid();
+  }
+
+  getUserRole(): string {
+    return this.tokenService.getUserRole();
   }
 }

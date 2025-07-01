@@ -20,6 +20,10 @@ export const routes: Route[] = [
             path: '',
             loadComponent: () => import('./members/members-list/members-list.page').then( m => m.MembersListPage)
           },
+          {
+            path: ':idMember/update',
+            loadComponent: () => import('./members/members-list/members-list.page').then( m => m.MembersListPage)
+          },
         ]
       }
     ]

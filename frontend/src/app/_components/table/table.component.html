@@ -1,0 +1,42 @@
+@if (dataSource.data.length > 0) {
+  <div class="table-container">
+
+    <mat-table [dataSource]="dataSource" matSort class="table">
+
+      @for (column of displayedColumns; track column) {
+
+        <ng-container [matColumnDef]="column.label">
+          <mat-header-cell *matHeaderCellDef > {{ column.name}}</mat-header-cell>
+          <mat-cell *matCellDef="let element" [routerLink]="itemRoute ? [itemRoute, element.id,'update'] : ''">
+            @switch (column.type) {
+              @case("array") {
+                @for (ob of element[column.label]; track ob){
+                  {{ob[column.sublabel]}}
+                }
+              }
+              @case ("actions") {
+                <div class="action-col">
+                <ion-icon name="chevron-forward"></ion-icon>
+                </div>
+              }
+              @default {
+                {{ element[column.label] }}
+              }
+            }
+          </mat-cell>
+        </ng-container>
+      }
+
+      <mat-header-row *matHeaderRowDef="columnName"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: columnName;"></mat-row>
+    </mat-table>
+  </div>
+} @else {
+  <p>Aucune données à afficher</p>
+}
+<mat-paginator
+  [pageSize]="10"
+  [length]="totalCount"
+  [pageSizeOptions]="[5, 10, 20]"
+  showFirstLastButtons>
+</mat-paginator>

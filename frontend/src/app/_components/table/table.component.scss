@@ -1,0 +1,77 @@
+$border-style:  0.5px solid var(--ion-color-list);
+
+mat-table {
+  width: 100%;
+  background: white;
+}
+
+mat-header-cell {
+  background-color: unset;
+}
+
+mat-cell {
+  white-space: nowrap;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-right: $border-style;
+  border-bottom: 0.5px solid rgba(var(--ion-color-medium-rgb),0.5);
+  height: inherit;
+}
+
+.mdc-data-table__cell {
+  white-space: nowrap;
+}
+
+.mdc-data-table__header-cell {
+  border: none;
+  padding-bottom: 16px
+}
+
+.mdc-data-table__row:last-child .mdc-data-table__cell {
+  white-space: nowrap;
+}
+
+.mdc-data-table__cell:last-child {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  width: max-content;
+}
+
+
+.mdc-data-table__header-row {
+  width: unset;
+  height: auto!important;
+  text-transform: uppercase!important;
+  font-weight: bolder;
+}
+
+
+// CELL PADDING
+mat-header-cell.mat-header-cell, mat-cell.mat-cell, mat-cell.mat-footer-cell {
+  padding: 0 16px;
+}
+
+mat-row {
+  cursor: pointer;
+}
+
+
+
+.text-header-column {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.action-col {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  width: fit-content;
+}
+
+mat-paginator{
+  background-color: white;
+}

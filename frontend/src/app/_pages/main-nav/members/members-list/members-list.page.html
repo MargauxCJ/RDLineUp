@@ -1,40 +1,13 @@
 <ion-content [fullscreen]="true" class="ion-content-padding">
-  @if (authService.currentUser$|async; as currentUser) {
-    <h1>Membres de {{currentUser.teams[0].club.name}} </h1>
+  @if (currentUser$ | async; as currentUser) {
+    <h1>Membres de {{ currentUser.teams[0]?.club?.name }}</h1>
 
     <ion-card class="card-list">
-      <ion-grid>
-        <ion-row class="header-list">
-          <ion-col>Nom</ion-col>
-          <ion-col>Equipe</ion-col>
-          <ion-col>Position par défaut</ion-col>
-          <ion-col>Date création compte</ion-col>
-          <ion-col  class="action-col">
-          </ion-col>
-        </ion-row>
-        @for (member of (members$|async); track member) {
-          <ion-row class="row-list" [routerLink]="member.id+'/view'">
-            <ion-col>
-              @if(member.jerseyNum) {
-                #{{member.jerseyNum}} -
-              }
-              {{ member.surname }}</ion-col>
-            <ion-col>{{member.teams[0].name}}</ion-col>
-            <ion-col>{{member.defaultPosition}}</ion-col>
-            <ion-col>{{member.createdAt|date:'dd/MM/yyyy'}}</ion-col>
-            <ion-col class="action-col">
-              <ion-fab-button size="small" class="primary-fab-button"><ion-icon name="eye"></ion-icon></ion-fab-button>
-              <ion-fab-button size="small" class="primary-fab-button"><ion-icon name="pencil"></ion-icon></ion-fab-button>
-              <ion-fab-button size="small" class="delete-fab-button"><ion-icon name="trash"></ion-icon></ion-fab-button>
-            </ion-col>
-          </ion-row>
-        }
-      </ion-grid>
-      <div class="paginator">
-        <ion-icon name="chevron-back"></ion-icon>
-        21
-        <ion-icon name="chevron-forward"></ion-icon>
-      </div>
+      <app-table
+        [apiEndpoint]="'users'"
+        [displayedColumns]="displayedColumnList"
+        [itemRoute]="'/members'">
+      </app-table>
     </ion-card>
   }
 </ion-content>

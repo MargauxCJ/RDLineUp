@@ -1,4 +1,19 @@
-/*
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.dev/guide/theming
+@use '@angular/material' as mat;
+
+html {
+  @include mat.theme((
+    color: (
+      theme-type: light,
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+}/*
  * App Global CSS
  * ----------------------------------------------------------------------------
  * Put style rules here that you want to apply globally. These styles are for
@@ -198,47 +213,6 @@ ion-card {
   padding: 16px;
   border-radius: 15px;
   --color: var(--ion-color-dark);
-
-  .header-list {
-    border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.1);
-    text-transform: uppercase;
-    font-weight: bold;
-
-    ion-col {
-      padding: 0 0 16px 0;
-    }
-  }
-
-  .row-list {
-    cursor: pointer;
-    border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.1);
-  }
-
-  ion-col {
-    //padding: 16px 48px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-  }
-
-  .action-col {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-end;
-  }
-
-  .paginator {
-    margin-top: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: row;
-
-    ion-icon {
-      font-size: 24px;
-    }
-  }
 }
 
 
@@ -259,3 +233,6 @@ ion-fab-button {
   --background: rgba(var(--ion-color-danger-rgb), 0.1);
   --color: var(--ion-color-danger);
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
