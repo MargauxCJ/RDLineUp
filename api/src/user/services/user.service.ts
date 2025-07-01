@@ -8,15 +8,17 @@ import {
 import { BaseService } from 'src/common/services/base.service';
 import { UserEntity } from '../entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import {In, Repository} from 'typeorm';
+import {FindOptionsWhere, ILike, In, Repository} from 'typeorm';
 import { MessageService } from 'src/common/services/message/message.service';
 import {catchError, from, map, Observable, switchMap, throwError} from 'rxjs';
-import {instanceToPlain, plainToInstance} from 'class-transformer';
+import {ClassConstructor, instanceToPlain, plainToInstance} from 'class-transformer';
 import {AuthService} from 'src/auth/services/auth.service';
 import {CreateUserDto} from 'src/user/entity/dto/create-user.dto';
 import {LoginDto} from 'src/user/entity/dto/login.dto';
 import {CurrentUserDto} from 'src/user/entity/dto/current-user.dto';
 import {TeamEntity} from 'src/team/entity/team.entity';
+import {PaginatedResultDto} from 'src/common/entities/paginatedResult.dto';
+import {UsersListDto} from 'src/user/entity/dto/users-list.dto';
 
 @Injectable()
 export class UserService extends BaseService<UserEntity> {
@@ -153,6 +155,34 @@ export class UserService extends BaseService<UserEntity> {
           }),
         );
       }),
+    );
+  }
+
+  public findAllPaginatedWithFilters(
+    page: number = 1,
+    limit: number = 10,
+    relations: string[] = [],
+    search?: string,
+    teamId?: string,
+  ): Observable<PaginatedResultDto<UsersListDto>> {
+    const where: FindOptionsWhere<UserEntity> = {};
+
+    if (teamId) {
+      // Filtrer par équipe via relation (assure-toi que ta relation s'appelle bien 'teams')
+      where['teams'] = { id: teamId } as any;
+    }
+
+    if (search) {
+      // Filtrer par nom (insensible à la casse)
+      where['surname'] = ILike(`%${search}%`);
+    }
+
+    return this.findAllPaginated(
+      UsersListDto,
+      page,
+      limit,
+      relations,
+      where,
     );
   }
 

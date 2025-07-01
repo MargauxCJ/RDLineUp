@@ -2,12 +2,13 @@
   @if (currentUser$ | async; as currentUser) {
     <h1>Membres de {{ currentUser.teams[0]?.club?.name }}</h1>
 
-    <ion-card class="card-list">
+
       <app-table
-        [apiEndpoint]="'users'"
-        [displayedColumns]="displayedColumnList"
+        [endpoint]="'users'"
+        [displayedColumnList]="displayedColumnList"
+        [filters]="filters"
         [itemRoute]="'/members'">
       </app-table>
-    </ion-card>
+
   }
 </ion-content>

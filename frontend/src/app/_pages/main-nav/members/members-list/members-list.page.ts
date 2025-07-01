@@ -1,7 +1,7 @@
 import {IonCard, IonContent} from '@ionic/angular/standalone';
 import {CommonModule} from '@angular/common';
 import {Component} from '@angular/core';
-import {ColumnConfig, TableComponent} from '../../../../_components/table/table.component';
+import {ColumnConfig, FilterConfig, TableComponent} from '../../../../_components/table/table.component';
 import {AuthService} from '../../../../_services/auth/auth.service';
 
 @Component({
@@ -21,6 +21,19 @@ export class MembersListPage {
     { name: 'Position par défaut', label: 'defaultPosition', type: 'text' },
     { name: 'Email', label: 'email', type: 'text' },
   ];
+  public filters: FilterConfig[] = [
+    { label: 'Nom', key: 'search', type: 'text' },
+    {
+      label: 'Équipe(s)',
+      key: 'teamId',
+      type: 'select',
+      options: [
+        { value: '1', display: 'Léopard Avengers' },
+        { value: '2', display: 'Les pétroleuses' },
+      ]
+    },
+  ];
+
 
   constructor(private authService: AuthService) {
 

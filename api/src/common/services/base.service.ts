@@ -33,7 +33,8 @@ export class BaseService<T> {
     dtoClass: ClassConstructor<V>,
     page: number = 1,
     limit: number = 10,
-    relations: string[] = []
+    relations: string[] = [],
+    where?: FindOptionsWhere<T> | FindOptionsWhere<T>[],
   ): Observable<PaginatedResultDto<V>> {
     const skip = (page - 1) * limit;
 
@@ -42,7 +43,8 @@ export class BaseService<T> {
         skip,
         take: limit,
         relations,
-      })
+        where,
+      }),
     ).pipe(
       map(([entities, total]) => {
         const data = entities.map(e => plainToInstance(dtoClass, e));

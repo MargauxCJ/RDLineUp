@@ -1,89 +1,170 @@
-import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
-import {
-  MatPaginator
-} from '@angular/material/paginator';
-import {
-  MatSort
-} from '@angular/material/sort';
-import {
-  MatCell, MatCellDef,
-  MatColumnDef, MatHeaderCell, MatHeaderCellDef, MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef,
-  MatTable,
-  MatTableDataSource
-} from '@angular/material/table';
-import {ApiService} from '../../_services/api/api.service';
-import {EntityInterface} from '../../_entities/entity';
-import {RouterLink} from '@angular/router';
-import {IonIcon} from '@ionic/angular/standalone';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
+import { CommonModule } from '@angular/common';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
+import { ApiService, PaginatedResult } from '../../_services/api/api.service';
 import {addIcons} from 'ionicons';
-import {chevronForward} from 'ionicons/icons';
+import {chevronForward, search, close} from 'ionicons/icons';
+import {RouterLink} from '@angular/router';
+import {debounceTime, Subject} from 'rxjs';
+import {
+  IonButton,
+  IonCard,
+  IonIcon,
+  IonInput,
+  IonItem,
+  IonLabel,
+  IonSelect,
+  IonSelectOption
+} from '@ionic/angular/standalone';
+
+export interface EntityInterface {
+  id: string;
+  [key: string]: any;
+}
 
 export interface ColumnConfig {
   name: string;
   label: string;
-  type: 'text' | 'object' | 'array' | 'actions';
+  type: 'text' | 'array' | 'custom';
   sublabel?: string;
 }
+
+export interface FilterConfig {
+  label: string;
+  key: string;
+  type: 'text' | 'select';
+  options?: { value: any; display: string }[]; // pour select uniquement
+}
+
 @Component({
   selector: 'app-table',
+  standalone: true,
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.scss'],
   imports: [
-    MatPaginator, MatSort, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCell, RouterLink, IonIcon, MatCellDef, MatHeaderRow, MatRow, MatRowDef, MatHeaderRowDef
+    CommonModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    RouterLink,
+    IonCard,
+    IonIcon,
+    IonInput,
+    IonButton,
+    IonItem,
+    IonLabel,
+    IonSelect,
+    IonSelectOption,
   ]
 })
-export class TableComponent<Entity extends EntityInterface> implements OnInit, AfterViewInit {
+export class TableComponent<Entity extends EntityInterface> implements OnInit {
+  @Input() displayedColumnList: ColumnConfig[] = [];
+  @Input() filters: FilterConfig[] = [];
+  @Input() endpoint: string = '';
+  @Input() itemRoute: string;
 
-  @ViewChild(MatPaginator, { static: false }) public paginator: MatPaginator;
-  @ViewChild(MatSort) public sort: MatSort;
   public dataSource = new MatTableDataSource<Entity>();
-  public columnName: string[] = [];
+  public totalItems = 0;
+  public page = 1;
+  public limit = 10;
+  public search = '';
+  private searchSubject = new Subject<string>();
+  public filtersValues: {[key: string]: any} = {};
+  private textFilterSubject = new Subject<{ key: string, value: string }>();
 
-  @Input() public displayedColumns: ColumnConfig[];
-  @Input() public itemRoute?: string = '';
-  @Input() public apiEndpoint: string;
-  public totalCount: number = 0;
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(private apiService: ApiService<Entity>) {
-    addIcons({chevronForward})
+    addIcons({chevronForward, search, close})
   }
+
 
   ngOnInit() {
-    if (!this.displayedColumns.find(c => c.type === 'actions')) {
-      this.displayedColumns.push({name: '', label: 'actions', type: 'actions'});
+    this.textFilterSubject.pipe(
+      debounceTime(400)
+    ).subscribe(({ key, value }) => {
+      this.filtersValues[key] = value;
+      this.page = 1;
+      this.loadData();
+    });
+
+    this.searchSubject.pipe(
+      debounceTime(400)
+    ).subscribe(searchText => {
+      this.search = searchText;
+      this.page = 1;
+      this.loadData();
+    });
+
+    this.loadData();
+  }
+
+
+  loadData(): void {
+    const appliedFilters = Object.entries(this.filtersValues)
+      .filter(([_, v]) => v !== null && v !== undefined && v !== '')
+      .reduce((acc, [k, v]) => {
+        acc[k] = v;
+        return acc;
+      }, {} as Record<string, any>);
+
+    if (this.search) {
+      appliedFilters['search'] = this.search;
     }
 
-    this.displayedColumns.forEach((column) => {
-      this.columnName.push(column.label);
-    });
-  }
-
-  ngAfterViewInit() {
-    console.log('ngAfterViewInit called', this.paginator);
-    setTimeout(() => {
-      console.log('inside setTimeout', this.paginator);
-      if (this.paginator) {
-        this.loadPage(1, 10);
-        this.paginator.page.subscribe(() => {
-          this.loadPage(this.paginator.pageIndex + 1, this.paginator.pageSize);
-        });
-      } else {
-        console.warn('Paginator is undefined!');
-      }
-    });
-  }
-
-  private loadPage(page: number, size: number): void {
-    this.apiService.getAllPaginated(page, size, this.apiEndpoint)
-      .subscribe({
-        next: (res) => {
-          this.dataSource.data = res.data;
-          this.totalCount = res.total;
-        },
-        error: () => {
-          this.dataSource.data = [];
-          this.totalCount = 0;
-        }
+    this.apiService.getAllPaginated(this.page, this.limit, this.endpoint, appliedFilters)
+      .subscribe((result: PaginatedResult<Entity>) => {
+        this.dataSource.data = result.data;
+        this.totalItems = result.total;
       });
   }
+
+  onPageChange(event: PageEvent): void {
+    this.page = event.pageIndex + 1;
+    this.limit = event.pageSize;
+    this.loadData();
+  }
+
+  displayedColumns(): string[] {
+    return [...this.displayedColumnList.map(c => c.label), 'actions'];
+  }
+
+  formatArrayColumn(element: Entity, column: ColumnConfig): string {
+    const arr = element[column.label];
+    if (!Array.isArray(arr)) return '';
+    return arr.map(item => item[column.sublabel || '']).join(', ');
+  }
+
+  onFilterChange(key: string, value: any) {
+    const filter = this.filters.find(f => f.key === key);
+
+    if (filter?.type === 'text') {
+      this.textFilterSubject.next({ key, value });
+    } else {
+      if (value === null || value === undefined || value === '') {
+        delete this.filtersValues[key];  // Supprime le filtre si valeur vide
+      } else {
+        this.filtersValues[key] = value;
+      }
+      this.page = 1;
+      this.loadData();
+    }
+  }
+
+  clearFilters() {
+    this.filtersValues = {};
+    this.search = '';
+    this.page = 1;
+    this.loadData();
+  }
+
 }

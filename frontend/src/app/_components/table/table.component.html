@@ -1,42 +1,64 @@
-@if (dataSource.data.length > 0) {
-  <div class="table-container">
+<div class="table-toolbar">
+  @for (filter of filters; track filter) {
+    @if (filter.type === 'text') {
+        <ion-input
+          fill="outline" shape="round" mode="md" label-placement="stacked" label="Rechercher un nom" placeholder="Recherche..."
+          (ionInput)="onFilterChange(filter.key, $event.target.value)"
+          [value]="filtersValues[filter.key] || ''">
+          <ion-icon name="search" slot="start"></ion-icon>
+        </ion-input>
+    }
+    @if (filter.type === 'select') {
+        <ion-select
+          fill="outline" shape="round" mode="md" label-placement="stacked" [label]="filter.label" placeholder="Recherche..."
+          interface="popover"
+          (ionChange)="onFilterChange(filter.key, $event.detail.value)"
+          [value]="filtersValues[filter.key]">
+          <ion-select-option [value]="null">Tous</ion-select-option>
+          @for (opt of filter.options; track opt) {
+            <ion-select-option [value]="opt.value">{{ opt.display }}</ion-select-option>
+          }
+        </ion-select>
+    }
+  }
+  <ion-button color="danger" fill="outline" shape="round" mode="ios" (click)="clearFilters()" style="min-width: fit-content">Désactiver les filtres</ion-button>
+</div>
 
-    <mat-table [dataSource]="dataSource" matSort class="table">
+<ion-card class="card-list">
 
-      @for (column of displayedColumns; track column) {
+  <mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
-        <ng-container [matColumnDef]="column.label">
-          <mat-header-cell *matHeaderCellDef > {{ column.name}}</mat-header-cell>
-          <mat-cell *matCellDef="let element" [routerLink]="itemRoute ? [itemRoute, element.id,'update'] : ''">
-            @switch (column.type) {
-              @case("array") {
-                @for (ob of element[column.label]; track ob){
-                  {{ob[column.sublabel]}}
-                }
-              }
-              @case ("actions") {
-                <div class="action-col">
-                <ion-icon name="chevron-forward"></ion-icon>
-                </div>
-              }
-              @default {
-                {{ element[column.label] }}
-              }
-            }
-          </mat-cell>
-        </ng-container>
-      }
+    @for (column of displayedColumnList; track column.label) {
+      <ng-container [matColumnDef]="column.label">
+        <mat-header-cell *matHeaderCellDef> {{ column.name }}</mat-header-cell>
+        <mat-cell *matCellDef="let element" [routerLink]="itemRoute ? [itemRoute, element.id,'update'] : ''">
+          @if (column.type === 'text') {
+            {{ element[column.label] }}
+          } @else if (column.type === 'array') {
+            {{ formatArrayColumn(element, column) }}
+          } @else {
+            -
+          }
+        </mat-cell>
+      </ng-container>
+    }
 
-      <mat-header-row *matHeaderRowDef="columnName"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: columnName;"></mat-row>
-    </mat-table>
-  </div>
-} @else {
-  <p>Aucune données à afficher</p>
-}
-<mat-paginator
-  [pageSize]="10"
-  [length]="totalCount"
-  [pageSizeOptions]="[5, 10, 20]"
-  showFirstLastButtons>
-</mat-paginator>
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef></mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <ion-icon name="chevron-forward"></ion-icon>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns()"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns()"></mat-row>
+
+  </mat-table>
+
+  <mat-paginator
+    [length]="totalItems"
+    [pageSize]="limit"
+    [pageSizeOptions]="[5, 10, 25, 50]"
+    (page)="onPageChange($event)">
+  </mat-paginator>
+</ion-card>

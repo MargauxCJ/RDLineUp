@@ -23,9 +23,17 @@ export class ApiService<T> {
     this.apiUrl = this.environment.apiUrl;
   }
 
-  getAllPaginated(page: number, size: number, endpoint: string): Observable<PaginatedResult<T>> {
+  getAllPaginated(page: number, size: number, endpoint: string, filters?: { [key: string]: any }): Observable<PaginatedResult<T>> {
+    let queryParams = `?page=${page}&limit=${size}`;
+    if (filters) {
+      for (const key in filters) {
+        if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+          queryParams += `&${key}=${encodeURIComponent(filters[key])}`;
+        }
+      }
+    }
     return this.httpClient.get<PaginatedResult<T>>(
-      `${this.apiUrl}${endpoint}/paginated?page=${page}&size=${size}`
+      `${this.apiUrl}${endpoint}/paginated${queryParams}`
     );
   }
 

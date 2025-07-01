@@ -44,11 +44,12 @@ export class UserController {
   findAllPaginated(
     @Query() paginationQuery: PaginationQueryDto,
   ): Observable<PaginatedResultDto<UsersListDto>> {
-    return this.userService.findAllPaginated(
-      UsersListDto,
+    return this.userService.findAllPaginatedWithFilters(
       paginationQuery.page,
       paginationQuery.limit,
       ['teams'],
+      paginationQuery.search,
+      paginationQuery.teamId,
     );
   }
 

@@ -1,5 +1,16 @@
 $border-style:  0.5px solid var(--ion-color-list);
 
+.table-toolbar {
+  margin : 24px 0;
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+
+  ion-input, ion-select {
+    --background: white;
+  }
+}
+
 mat-table {
   width: 100%;
   background: white;

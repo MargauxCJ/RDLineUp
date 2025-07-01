@@ -1,4 +1,4 @@
-import { IsOptional, IsPositive, Min } from 'class-validator';
+import {IsOptional, IsPositive, IsString, Min} from 'class-validator';
 
 export class PaginationQueryDto {
   @IsOptional()
@@ -8,4 +8,12 @@ export class PaginationQueryDto {
   @IsOptional()
   @Min(1)
   limit?: number = 10; // limite par défaut à 10
+
+  @IsOptional()
+  @IsString()
+  search?: string;
+
+  @IsOptional()
+  @IsString()
+  teamId?: string;
 }
