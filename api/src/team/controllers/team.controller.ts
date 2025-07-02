@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Param, Post, Put, Delete } from '@nestjs/common';
+import {Body, Controller, Get, Param, Post, Put, Delete, BadRequestException} from '@nestjs/common';
 import { TeamService } from '../services/team.service';
 import { Observable } from 'rxjs';
 import { TeamEntity } from '../entity/team.entity';
 import { map } from 'rxjs/operators';
 import {CreateTeamDto} from 'src/team/entity/dto/create-team.dto';
+import {TeamListItemDto} from 'src/team/entity/dto/team-list-item.dto';
 
 @Controller('teams')
 export class TeamController {
@@ -56,6 +57,15 @@ export class TeamController {
     @Param('userId') userId: number,
   ): Observable<TeamEntity> {
     return this.teamService.removeMember(teamId, userId);
+  }
+
+  @Get(':clubId/teams')
+  getTeamsByClub(@Param('clubId') clubId: string) {
+    const numericClubId = Number(clubId);
+    if (isNaN(numericClubId)) {
+      throw new BadRequestException('Invalid club ID');
+    }
+    return this.teamService.findByClub(numericClubId);
   }
 
 }

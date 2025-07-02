@@ -6,7 +6,9 @@ import { BaseService } from 'src/common/services/base.service';
 import { MessageService } from 'src/common/services/message/message.service';
 import {UserEntity} from 'src/user/entity/user.entity';
 import {EventEntity} from 'src/event/entity/event.entity';
-import {from, Observable, switchMap} from 'rxjs';
+import {from, map, Observable, switchMap} from 'rxjs';
+import {TeamListItemDto} from 'src/team/entity/dto/team-list-item.dto';
+import {plainToInstance} from 'class-transformer';
 
 @Injectable()
 export class TeamService extends BaseService<TeamEntity> {
@@ -58,6 +60,18 @@ export class TeamService extends BaseService<TeamEntity> {
         team.members = team.members.filter((m) => m.id !== userId);
         return from(this.teamRepository.save(team));
       }),
+    );
+  }
+
+  findByClub(clubId: number): Observable<TeamListItemDto[]> {
+    return from(
+      this.teamRepository.find({
+        where: { club: { id: clubId } },
+        relations: ['club'],
+        order: { name: 'ASC' },
+      })
+    ).pipe(
+      map(teams => plainToInstance(TeamListItemDto, teams, { excludeExtraneousValues: true }))
     );
   }
 }

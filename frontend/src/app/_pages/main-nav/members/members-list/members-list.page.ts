@@ -3,6 +3,8 @@ import {CommonModule} from '@angular/common';
 import {Component} from '@angular/core';
 import {ColumnConfig, FilterConfig, TableComponent} from '../../../../_components/table/table.component';
 import {AuthService} from '../../../../_services/auth/auth.service';
+import {TeamService} from '../../../../_services/api/team.service';
+import {filter, switchMap} from 'rxjs';
 
 @Component({
   selector: 'app-members-list',
@@ -28,14 +30,24 @@ export class MembersListPage {
       key: 'teamId',
       type: 'select',
       options: [
-        { value: '1', display: 'Léopard Avengers' },
-        { value: '2', display: 'Les pétroleuses' },
       ]
     },
   ];
 
 
-  constructor(private authService: AuthService) {
-
+  constructor(private authService: AuthService, private teamService: TeamService) {
+    this.authService.currentUser$
+      .pipe(
+        filter(user => !!user),
+        switchMap(user => this.teamService.getTeamsByClub(Number(user.teams[0].club.id)))
+      )
+      .subscribe(teams => {
+        const teamFilter = this.filters.find(f => f.key === 'teamId');
+        if (teamFilter) {
+          teamFilter.options = [
+            ...teams.map(t => ({ value: t.id, display: t.name }))
+          ];
+        }
+      });
   }
 }
