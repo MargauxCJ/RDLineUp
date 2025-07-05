@@ -20,6 +20,9 @@ export class CurrentUserDto {
   role: string;
 
   @Expose()
+  imgProfile: string;
+
+  @Expose()
   @Type(() => TeamListSubDto)
   teams: TeamListSubDto[];
   @Expose()

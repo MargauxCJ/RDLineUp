@@ -86,3 +86,12 @@ mat-row {
 mat-paginator{
   background-color: white;
 }
+
+.image-list-container {
+  background-repeat: no-repeat !important;
+  background-position: center!important;
+  background-size: cover!important;
+  height: 48px;
+  width: 48px;
+  border-radius: 100px;
+}

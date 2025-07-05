@@ -2,7 +2,6 @@
   @if (authService.currentUser$ |async; as currentUser) {
     <div class="side-nav">
       <div class="profile-image-nav-container" [style.background-image]="imagesService.getImgProfileCurrentUser(currentUser)"></div>
-
       <div class="nav-page-container">
         <div class="nav-item-container" [routerLink]="'dashboard'" routerLinkActive="active">
           <ion-icon name="grid"></ion-icon>

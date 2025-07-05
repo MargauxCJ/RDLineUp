@@ -23,6 +23,9 @@ export class UsersListDto {
   role: UserRole;
 
   @Expose()
+  imgProfile: string;
+
+  @Expose()
   defaultPosition: MemberPosition;
 
   @Expose()

@@ -22,6 +22,7 @@ import {
   IonSelect,
   IonSelectOption
 } from '@ionic/angular/standalone';
+import {ImagesService} from '../../_services/images.service';
 
 export interface EntityInterface {
   id: string;
@@ -31,7 +32,7 @@ export interface EntityInterface {
 export interface ColumnConfig {
   name: string;
   label: string;
-  type: 'text' | 'array' | 'custom';
+  type: 'text' | 'array' | 'custom'|'image';
   sublabel?: string;
 }
 
@@ -83,7 +84,7 @@ export class TableComponent<Entity extends EntityInterface> implements OnInit {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  constructor(private apiService: ApiService<Entity>) {
+  constructor(private apiService: ApiService<Entity>, public imagesService: ImagesService) {
     addIcons({chevronForward, search, close})
   }
 

@@ -17,11 +17,11 @@ export class ImagesService {
   }
 
   getImgProfileCurrentUser(user: User): string {
-    return 'url('+this.apiUrl+'member/profile-image/'+ user?.imgProfile + ')';
+    return 'url('+this.apiUrl+'users/profile-image/'+ user?.imgProfile + ')';
   }
 
 
-  // getImgProfileEntity(entityName: string, entity: Band|Structure|Establishment) : string {
-  //   return (entity.imgProfile !== null || undefined) ? `url(${this.apiUrl}${entityName}/profile-image/${entity.imgProfile})` : 'url(/assets/logos/no-photo.png)';
-  // }
+  getImgProfileEntity(entityName: string, entity: any) : string {
+    return (entity.imgProfile !== null || undefined) ? `url(${this.apiUrl}${entityName}/profile-image/${entity.imgProfile})` : '';
+  }
 }
