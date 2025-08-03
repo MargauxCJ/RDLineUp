@@ -41,11 +41,11 @@ export class ApiService<T> {
     return this.httpClient.get<T>(`${this.apiUrl}${endpoint}/${id}`);
   }
 
-  postOne(body: T, endpoint: string): Observable<T> {
+  postOne(body: Partial<T>, endpoint: string): Observable<T> {
     return this.httpClient.post<T>(`${this.apiUrl}${endpoint}`, body);
   }
 
-  updateOne(id: string, body: T, endpoint: string): Observable<T> {
+  updateOne(id: string, body: Partial<T>, endpoint: string): Observable<T> {
     return this.httpClient.put<T>(`${this.apiUrl}${endpoint}/${id}`, body);
   }
 

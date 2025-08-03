@@ -1,4 +1,3 @@
-<ion-content  [fullscreen]="true">
   @if (authService.currentUser$ |async; as currentUser) {
     <div class="side-nav">
       <div class="profile-image-nav-container" [style.background-image]="imagesService.getImgProfileCurrentUser(currentUser)"></div>
@@ -31,4 +30,3 @@
     </div>
     <ion-router-outlet></ion-router-outlet>
   }
-</ion-content>

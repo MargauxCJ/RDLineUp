@@ -1,14 +1,20 @@
 <ion-content [fullscreen]="true" class="ion-content-padding">
   @if (currentUser$ | async; as currentUser) {
-    <h1>Membres de {{ currentUser.teams[0]?.club?.name }}</h1>
+    <div class="header-page-container">
+      <div class="header-page-icon">
+        <h1>Membres de {{ currentUser.teams[0]?.club?.name }}</h1>
+      </div>
 
+      <div class="header-page-buttons">
+        <ion-button mode="ios" shape="round" color="primary" [routerLink]="'./add'">Ajouter un.e membre</ion-button>
+      </div>
+    </div>
 
-      <app-table
-        [endpoint]="'users'"
-        [displayedColumnList]="displayedColumnList"
-        [filters]="filters"
-        [itemRoute]="'/members'">
-      </app-table>
-
+    <app-table
+      [displayedColumnList]="displayedColumnList"
+      [filters]="filters"
+      [itemRoute]="'/members'"
+      (loadDataEvent)="onLoadData($event.page, $event.limit, $event.filters)">
+    </app-table>
   }
 </ion-content>

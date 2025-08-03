@@ -1,13 +1,4 @@
-import {
-  BeforeInsert,
-  BeforeUpdate,
-  Column,
-  Entity,
-  JoinColumn, JoinTable,
-  ManyToMany,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import {BeforeInsert, Column, Entity, JoinTable, ManyToMany,} from 'typeorm';
 import {TeamEntity} from '../../team/entity/team.entity';
 import {EventEntity} from '../../event/entity/event.entity';
 import {GameEntity} from '../../game/entity/game.entity';
@@ -49,6 +40,9 @@ export class UserEntity extends BaseEntity {
 
   @Column({ unique: true })
   email: string;
+
+  @Column({default: true})
+  enabled: boolean;
 
   @ManyToMany(() => TeamEntity, (team) => team.members)
   @JoinTable()

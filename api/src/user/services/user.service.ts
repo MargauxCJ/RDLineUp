@@ -19,6 +19,7 @@ import {CurrentUserDto} from 'src/user/entity/dto/current-user.dto';
 import {TeamEntity} from 'src/team/entity/team.entity';
 import {PaginatedResultDto} from 'src/common/entities/paginatedResult.dto';
 import {UsersListDto} from 'src/user/entity/dto/users-list.dto';
+import {UserFormDto} from 'src/user/entity/dto/user-form.dto';
 
 @Injectable()
 export class UserService extends BaseService<UserEntity> {
@@ -118,7 +119,6 @@ export class UserService extends BaseService<UserEntity> {
           throw new NotFoundException(this.messageService.get('NOT_FOUND', 'Utilisateur'));
         }
 
-        // Utiliser la méthode mapToPlain pour convertir l'entité en DTO
         return this.mapToPlain(user, CurrentUserDto);
       }),
       catchError(err => {
@@ -129,9 +129,25 @@ export class UserService extends BaseService<UserEntity> {
       }),
     );
   }
+  updateProfileImage(userId: number, file: Express.Multer.File) {
+    return this.updateImage(
+      userId,
+      'imgProfile',
+      file,
+      'users/profile-image',
+      'default.jpg'
+    );
+  }
 
-
-
+  getUserFormById(id: number): Observable<UserFormDto> {
+    return this.findOneByField(
+      'id',
+      id,
+      'USER_NOT_FOUND',
+      (user) => plainToInstance(UserFormDto, user),
+      ['teams']
+    );
+  }
 
   validateUser(email: string, password: string): Observable<UserEntity> {
     return this.findByMail(email).pipe(

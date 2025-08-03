@@ -26,18 +26,20 @@
 
 <ion-card class="card-list">
 
-  <mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+    <mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
     @for (column of displayedColumnList; track column.label) {
       <ng-container [matColumnDef]="column.label">
-        <mat-header-cell *matHeaderCellDef> {{ column.name }}</mat-header-cell>
-        <mat-cell *matCellDef="let element" [routerLink]="itemRoute ? [itemRoute, element.id,'update'] : ''">
+        <mat-header-cell *matHeaderCellDef class="email-col"> {{ column.name }}</mat-header-cell>
+        <mat-cell *matCellDef="let element" class="email-col" [routerLink]="itemRoute ? [itemRoute, element.id,'update'] : ''">
           @if (column.type === 'text') {
             {{ element[column.label] }}
           } @else if (column.type === 'array') {
             {{ formatArrayColumn(element, column) }}
           } @else if (column.type === 'image') {
             <div class="image-list-container" [style.background-image]="imagesService.getImgProfileEntity('users',element)"></div>
+          } @else if (column.type === 'enabled') {
+            {{element ? "activé" : "désactivé"}}
           } @else {
             -
           }
@@ -46,8 +48,8 @@
     }
 
     <ng-container matColumnDef="actions">
-      <mat-header-cell *matHeaderCellDef></mat-header-cell>
-      <mat-cell *matCellDef="let element">
+      <mat-header-cell *matHeaderCellDef class="action-col"></mat-header-cell>
+      <mat-cell *matCellDef="let element" class="action-col">
         <ion-icon name="chevron-forward"></ion-icon>
       </mat-cell>
     </ng-container>

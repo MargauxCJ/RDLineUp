@@ -1,7 +1,7 @@
-$border-style:  0.5px solid var(--ion-color-list);
+$border-style: 0.5px solid var(--ion-color-list);
 
 .table-toolbar {
-  margin : 24px 0;
+  margin: 24px 0;
   display: flex;
   flex-direction: row;
   gap: 24px;
@@ -13,25 +13,10 @@ $border-style:  0.5px solid var(--ion-color-list);
 
 mat-table {
   width: 100%;
-  background: white;
+  display: block;
+  background-color: white;
 }
 
-mat-header-cell {
-  background-color: unset;
-}
-
-mat-cell {
-  white-space: nowrap;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  border-right: $border-style;
-  border-bottom: 0.5px solid rgba(var(--ion-color-medium-rgb),0.5);
-  height: inherit;
-}
-
-.mdc-data-table__cell {
-  white-space: nowrap;
-}
 
 .mdc-data-table__header-cell {
   border: none;
@@ -53,8 +38,8 @@ mat-cell {
 
 .mdc-data-table__header-row {
   width: unset;
-  height: auto!important;
-  text-transform: uppercase!important;
+  height: auto !important;
+  text-transform: uppercase !important;
   font-weight: bolder;
 }
 
@@ -67,8 +52,6 @@ mat-header-cell.mat-header-cell, mat-cell.mat-cell, mat-cell.mat-footer-cell {
 mat-row {
   cursor: pointer;
 }
-
-
 
 .text-header-column {
   font-size: 16px;
@@ -83,15 +66,62 @@ mat-row {
   width: fit-content;
 }
 
-mat-paginator{
+mat-paginator {
   background-color: white;
 }
 
 .image-list-container {
   background-repeat: no-repeat !important;
-  background-position: center!important;
-  background-size: cover!important;
+  background-position: center !important;
+  background-size: cover !important;
   height: 48px;
   width: 48px;
   border-radius: 100px;
 }
+mat-header-row, mat-row {
+  display: flex;
+  width: 100%;
+}
+
+mat-header-cell, mat-cell {
+  flex: 0 0 auto;
+  min-width: 120px;
+  width: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 8px 16px;
+  border-right: $border-style;
+  border-bottom: 0.5px solid rgba(var(--ion-color-medium-rgb), 0.5);
+}
+
+mat-header-cell {
+  font-weight: bold;
+  background-color: unset;
+}
+
+mat-row, mat-header-row {
+  display: flex;
+}
+
+mat-header-cell.name-col, mat-cell.name-col {
+  flex: 1 1 180px;
+}
+
+mat-header-cell.email-col, mat-cell.email-col {
+  flex: 1 1 250px;
+}
+
+mat-header-cell.action-col, mat-cell.action-col {
+  flex: 0 0 60px;
+  justify-content: flex-end;
+}
+
+.action-col {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex: 0 0 auto;
+  min-width: 80px;
+}
+

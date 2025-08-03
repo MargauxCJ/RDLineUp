@@ -21,8 +21,14 @@ export const routes: Route[] = [
             loadComponent: () => import('./members/members-list/members-list.page').then( m => m.MembersListPage)
           },
           {
-            path: ':idMember/update',
-            loadComponent: () => import('./members/members-list/members-list.page').then( m => m.MembersListPage)
+            path: 'add',
+            loadComponent: () => import('./members/member-form/member-form.page').then((m) => m.MemberFormPage),
+            data: {addOrUpdate: 'add'},
+          },
+          {
+            path: ':memberId/update',
+            loadComponent: () => import('./members/member-form/member-form.page').then((m) => m.MemberFormPage),
+            data: {addOrUpdate: 'update'},
           },
         ]
       }

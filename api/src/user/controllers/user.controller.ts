@@ -4,7 +4,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
-  Post,
+  Post, Put,
   Query, Res,
   UploadedFile,
   UseGuards,
@@ -22,6 +22,8 @@ import {PaginatedResultDto} from 'src/common/entities/paginatedResult.dto';
 import {PaginationQueryDto} from 'src/common/entities/paginationQuery.dto';
 import {FileInterceptor} from '@nestjs/platform-express';
 import {uploadConfig} from 'src/common/utils/upload.utils';
+import {UserFormDto} from 'src/user/entity/dto/user-form.dto';
+import {UserEntity} from 'src/user/entity/user.entity';
 
 @Controller('users')
 export class UserController {
@@ -48,6 +50,16 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Put(':id')
+  update(
+    @Param('id') id: number,
+    @Body() user: UserEntity,
+  ): Observable<any> {
+    return this.userService.updateOneByField('id', id, user);
+  }
+
+
+  @UseGuards(JwtAuthGuard)
   @Get()
   findAll(): Observable<UsersListDto[]> {
     return this.userService.findAll(UsersListDto, ['teams']);
@@ -67,23 +79,17 @@ export class UserController {
   }
 
   @Get(':id')
-  getUserById(@Param('id', ParseIntPipe) id: number) {
-    return this.userService.findOneByField('id', +id);
+  getUserFormById(@Param('id', ParseIntPipe) id: number): Observable<UserFormDto> {
+    return this.userService.getUserFormById(id);
   }
 
   @Post('upload/:userId')
   @UseInterceptors(FileInterceptor('file', uploadConfig('users/profile-image')))
   uploadImgProfile(
-    @Param('userId') clubId: string,
+    @Param('userId') userId: string,
     @UploadedFile() file: Express.Multer.File,
   ): Observable<{ imgProfile: string }> {
-    return this.userService
-      .updateOneByField('id', Number(clubId), { imgProfile: file.filename })
-      .pipe(
-        map(() => ({
-          imgProfile: file.filename,
-        })),
-      );
+    return this.userService.updateProfileImage(Number(userId), file);
   }
 
   @Get('profile-image/:imagename')

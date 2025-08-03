@@ -9,6 +9,8 @@ import { MessageService } from 'src/common/services/message/message.service';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import {ClassConstructor, instanceToPlain, plainToInstance} from 'class-transformer';
 import {PaginatedResultDto} from 'src/common/entities/paginatedResult.dto';
+import {join} from 'path';
+import * as fs from 'node:fs';
 
 export class BaseService<T> {
   constructor(
@@ -54,21 +56,29 @@ export class BaseService<T> {
   }
 
 
-  public findOneByField<K extends keyof T>(
+  public findOneByField<K extends keyof T, R = T>(
     field: K,
     value: T[K],
     notFoundKey = 'NOT_FOUND',
-  ): Observable<any> {
-    return from(this.repository.findOneBy({ [field]: value } as any)).pipe(
+    mapToDto?: (entity: T) => R,
+    relations: string[] = [],
+  ): Observable<R> {
+    return from(
+      this.repository.findOne({
+        where: { [field]: value } as any,
+        relations,
+      })
+    ).pipe(
       map((item) => {
         if (!item) {
           throw new NotFoundException(
             this.messageService.get(notFoundKey, this.entityLabel),
           );
         }
-        return this.mapToPlain(item);
+        const mapped = mapToDto ? mapToDto(item) : (this.mapToPlain(item) as R);
+        return mapped;
       }),
-      this.handleError<any>(),
+      this.handleError<R>(),
     );
   }
 
@@ -90,7 +100,7 @@ export class BaseService<T> {
   public updateOneByField<K extends keyof T>(
     field: K,
     value: T[K],
-    updateData: QueryDeepPartialEntity<T>,
+    updateData: DeepPartial<T>,
     notFoundMessage = 'NOT_FOUND',
   ): Observable<any> {
     const whereCondition: FindOptionsWhere<T> = {
@@ -98,10 +108,26 @@ export class BaseService<T> {
     } as FindOptionsWhere<T>;
 
     return this.findOneByField(field, value, notFoundMessage).pipe(
-      switchMap(() => from(this.repository.update(whereCondition, updateData))),
+      switchMap((existingEntity) => {
+        const hasRelations = Object.entries(updateData).some(([_, val]) =>
+          Array.isArray(val) || typeof val === 'object'
+        );
+
+        if (hasRelations) {
+          const merged = this.repository.merge(existingEntity, updateData);
+          return from(this.repository.save(merged));
+        } else {
+          // ⬇️ Cast ici uniquement pour update
+          return from(this.repository.update(
+            whereCondition,
+            updateData as QueryDeepPartialEntity<T>
+          ));
+        }
+      }),
       this.handleError<any>(),
     );
   }
+
 
   public create(data: DeepPartial<T>): Observable<T> {
     return from(this.repository.save(data)).pipe(
@@ -110,6 +136,35 @@ export class BaseService<T> {
         return this.findOneByField('id' as keyof T, id);
       }),
       this.handleError<any>(),
+    );
+  }
+
+  updateImage<K extends keyof T>(
+    id: number,
+    imageField: K,
+    file: Express.Multer.File,
+    imageFolder: string,
+    defaultImage = 'default.jpg',
+  ): Observable<{ [P in K]: string }> {
+    return from(this.repository.findOneBy({ id } as any)).pipe(
+      switchMap(entity => {
+        if (!entity) {
+          throw new NotFoundException(`Entité avec id ${id} non trouvée`);
+        }
+
+        const currentImage = entity[imageField] as unknown as string;
+
+        if (currentImage && currentImage !== defaultImage) {
+          const oldPath = join(process.cwd(), 'uploads', imageFolder, currentImage);
+          if (fs.existsSync(oldPath)) {
+            fs.unlinkSync(oldPath);
+          }
+        }
+
+        entity[imageField] = file.filename as unknown as T[K];
+        return from(this.repository.save(entity));
+      }),
+      map(() => ({ [imageField]: file.filename } as { [P in K]: string })),
     );
   }
 

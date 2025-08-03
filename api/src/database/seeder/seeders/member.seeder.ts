@@ -67,11 +67,14 @@ export class MemberSeeder {
       password: hashedPassword,
       role: UserRole.COACH_USER,
       teams: [leopardAvengersTeam, lesPetroleusesTeam],
+      imgProfile: "praline-5ba310d5-a283-4d5a-a585-97bb50d73bc3.jpeg",
     });
 
     await userRepo.save(coach);
 
     console.log(`Coach "Praline" created`);
+
+
   }
 }
 

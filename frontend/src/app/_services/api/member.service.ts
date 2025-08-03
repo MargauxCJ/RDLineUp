@@ -30,4 +30,8 @@ export class MemberService extends ApiService<User> {
   getCurrentUser(): Observable<User> {
     return this.httpClient.get<User>(`${this.apiUrl}${this.endpoint}/current-user`);
   }
+
+  uploadProfileImage(userId: string, formData: FormData): Observable<{ imgProfile: string }> {
+    return this.httpClient.post<{ imgProfile: string }>(`${this.apiUrl}${this.endpoint}/upload/${userId}`, formData);
+  }
 }

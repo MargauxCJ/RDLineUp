@@ -1,0 +1,123 @@
+<ion-content [fullscreen]="true" class="ion-content-padding">
+    <form [formGroup]="memberForm" (ngSubmit)="submitMember()">
+      <div class="header-page-container">
+        <div class="header-page-icon">
+          <ion-button [routerLink]="'/members'" fill="clear" color="dark">
+            <ion-icon name="chevron-back"></ion-icon>
+          </ion-button>
+          @if (member$|async; as member) {
+            <h1>{{ member.surname }}</h1>
+          } @else {
+            <h1>Créer un.e membre</h1>
+          }
+
+        </div>
+
+        <div class="header-page-buttons">
+          <ion-button mode="ios" shape="round" color="danger" fill="outline">Désactiver</ion-button>
+          <ion-button mode="ios" shape="round" color="primary" type="submit">Enregistrer</ion-button>
+        </div>
+
+      </div>
+
+      <ion-card class="card-form">
+        <ion-grid>
+          <ion-row>
+            <ion-col size="6">
+              <div class="form-img-profile" [style.background]="
+                  memberForm.get('photoPreview')?.value ?
+                  'url('+memberForm.get('photoPreview')?.value+')'
+                  : ''">
+                @if (!memberForm.get('photoPreview').value) {
+                  <input type="file"
+                         class="novisible"
+                         id="member_upload"
+                         (change)="handleUpload($event)"
+                         accept="image/jpeg, image/png"
+                         #inputElement>
+                  <label for="member_upload" class="container-click-input">
+                    <ion-icon name="camera-outline"></ion-icon>
+                  </label>
+                } @else {
+                  <div class="button-container">
+                    <input type="file"
+                           class="novisible"
+                           id="member_upload_edit"
+                           (change)="handleUpload($event)"
+                           accept="image/jpeg, image/png"
+                           #inputElement>
+                    <label for="member_upload_edit">
+                      <div class="false-edit-button"><ion-icon name="pencil-outline"></ion-icon></div>
+                    </label>
+                    <ion-button color="danger" (click)="deleteUploadPhoto()"><ion-icon name="trash-outline"></ion-icon></ion-button>
+                  </div>
+                }
+              </div>
+            </ion-col>
+            <ion-col size="6">
+            </ion-col>
+          </ion-row>
+          <ion-row style="margin-top: 32px">
+            <ion-col size="5.5">
+              <ion-input mode="md" shape="round" formControlName="surname" label="Surnom *" label-placement="floating" fill="outline" type="text" [required]="true"></ion-input>
+            </ion-col>
+            <ion-col offset="1" size="5.5">
+              <ion-input mode="md" shape="round" formControlName="email" label="Email *" label-placement="floating" fill="outline" type="text" [required]="true"></ion-input>
+            </ion-col>
+          </ion-row>
+          <ion-row style="margin-top: 32px">
+            <ion-col size="5.5">
+              <ion-select
+                fill="outline" shape="round" mode="md" label-placement="stacked" [label]="'Role'"
+                interface="popover"
+                formControlName="role">
+                @for (userRole of userRoles; track userRole) {
+                  <ion-select-option [value]="userRole">{{ userRole }}</ion-select-option>
+                }
+              </ion-select>
+            </ion-col>
+            <ion-col offset="1" size="5.5">
+              <ion-select
+                fill="outline" shape="round" mode="md" label-placement="stacked" [label]="'Position par défaut'"
+                interface="popover"
+                formControlName="defaultPosition">
+                @for (memberPosition of memberPositions; track memberPosition) {
+                  <ion-select-option [value]="memberPosition">{{ memberPosition }}</ion-select-option>
+                }
+              </ion-select>
+            </ion-col>
+          </ion-row>
+          <ion-row style="margin-top: 32px">
+            <ion-col size="5.5">
+              <ion-input mode="md" shape="round" formControlName="jerseyNum" label="Numéro de maillot" label-placement="floating" fill="outline" type="text" [required]="true"></ion-input>
+            </ion-col>
+            <ion-col offset="1" size="5.5">
+              @for (team of teams.controls; let i=$index; track team){
+                <ion-row>
+                  <ion-col size="10" [formArrayName]="'teams'">
+                    <ion-select
+                      fill="outline" shape="round" mode="md" label-placement="stacked" placeholder="Sélectionner une équip" [label]="'Equipe'"
+                      interface="popover"
+                      [formControlName]="i">
+                      @for (objectionableTeam of getAvailableTeams(i); track objectionableTeam) {
+                        <ion-select-option [value]="objectionableTeam.id">{{ objectionableTeam.name}}</ion-select-option>
+                      }
+                    </ion-select>
+                  </ion-col>
+                  <ion-col size="1">
+                    <ion-button color="danger" (click)="removeTeam(i)"><ion-icon name="trash-outline"></ion-icon></ion-button>
+                  </ion-col>
+                </ion-row>
+              }
+              <ion-row>
+                <ion-col size="12">
+                  <ion-button [disabled]="!hasAvailableTeams()" fill="outline" (click)="addTeam()">Ajouter équipe</ion-button>
+                </ion-col>
+              </ion-row>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card>
+    </form>
+
+</ion-content>

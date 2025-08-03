@@ -1,18 +1,8 @@
 import {AbstractEntity, EntityInterface} from '../entity';
 import {Team} from '../teams/team.model';
 import {Game} from '../games/game.model';
-
-export enum UserRole {
-  ADMIN = 'admin',
-  COACH_USER = 'front',
-  MEMBER_USER = 'band',
-}
-
-export enum MemberPosition {
-  PIVOT = 'pivot',
-  BLOCKER = 'blocker',
-  JAMMER = 'jammer',
-}
+import {UserRole} from '../../_shared/user-role.enum';
+import {MemberPosition} from '../../_shared/default-position.enum';
 
 export interface UserInterface extends EntityInterface {
   surname: string;
