@@ -1,6 +1,7 @@
 import {Column, Entity, OneToMany,} from 'typeorm';
 import {TeamEntity} from '../../team/entity/team.entity';
 import {BaseEntity} from 'src/common/entities/base.entity';
+import {EventEntity} from 'src/event/entity/event.entity';
 
 @Entity('club')
 export class ClubEntity extends BaseEntity{
@@ -15,4 +16,7 @@ export class ClubEntity extends BaseEntity{
 
   @OneToMany(() => TeamEntity, (team) => team.club)
   teams: TeamEntity[];
+
+  @OneToMany(() => EventEntity, (event) => event.club)
+  events: EventEntity[];
 }

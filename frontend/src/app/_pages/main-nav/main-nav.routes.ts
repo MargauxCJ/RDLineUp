@@ -31,6 +31,25 @@ export const routes: Route[] = [
             data: {addOrUpdate: 'update'},
           },
         ]
+      },
+      {
+        path: 'events',
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./events/events-list/events-list.page').then(m => m.EventsListPage)
+          },
+          {
+            path: 'add',
+            loadComponent: () => import('./members/member-form/member-form.page').then((m) => m.MemberFormPage),
+            data: {addOrUpdate: 'add'},
+          },
+          {
+            path: ':eventId',
+            loadComponent: () => import('./members/member-form/member-form.page').then((m) => m.MemberFormPage),
+            data: {addOrUpdate: 'update'},
+          },
+        ]
       }
     ]
   },

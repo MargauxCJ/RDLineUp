@@ -7,6 +7,7 @@ import {BaseEntity} from 'src/common/entities/base.entity';
 
 @Entity('game')
 export class GameEntity extends BaseEntity {
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   schedule: Date;
 
@@ -16,6 +17,9 @@ export class GameEntity extends BaseEntity {
 
   @Column()
   opponentTeam: string;
+
+  @Column()
+  notes: string;
 
   @ManyToOne(() => EventEntity, (event) => event.games)
   event: EventEntity

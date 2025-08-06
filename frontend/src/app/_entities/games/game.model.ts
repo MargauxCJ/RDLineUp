@@ -4,6 +4,7 @@ import {User} from '../users/user.model';
 import {Club} from '../clubs/club.model';
 
 export interface GameInterface extends EntityInterface {
+  notes?: string;
   schedule: Date;
   team: Team;
   opponentTeam: string;
@@ -14,6 +15,7 @@ export interface GameInterface extends EntityInterface {
 }
 
 export class Game extends AbstractEntity implements GameInterface {
+  public note?: string = null;
   public schedule: Date = null;
   public team: Team = null;
   public opponentTeam: string = null;

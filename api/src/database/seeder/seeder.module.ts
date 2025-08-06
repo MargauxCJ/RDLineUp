@@ -13,6 +13,9 @@ import {TeamSeeder} from 'src/database/seeder/seeders/team.seeder';
 import {UserEntity} from 'src/user/entity/user.entity';
 import {UserModule} from 'src/user/user.module';
 import {MemberSeeder} from 'src/database/seeder/seeders/member.seeder';
+import {EventEntity} from 'src/event/entity/event.entity';
+import {EventModule} from 'src/event/event.module';
+import {EventSeeder} from 'src/database/seeder/seeders/event.seeder';
 
 @Module({
   imports: [
@@ -22,16 +25,19 @@ import {MemberSeeder} from 'src/database/seeder/seeders/member.seeder';
       ClubEntity,
       TeamEntity,
       UserEntity,
+      EventEntity,
     ]),
     ClubModule,
     TeamModule,
     UserModule,
+    EventModule,
   ],
   providers: [
     SeederService,
     ClubSeeder,
     TeamSeeder,
     MemberSeeder,
+    EventSeeder,
   ],
 })
 export class SeederModule {}

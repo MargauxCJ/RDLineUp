@@ -42,6 +42,7 @@ export class MemberStoreService {
     return this.memberService.postOne(newMember, 'users').pipe(
       tap((member: User) => {
         const members = this.membersSubject.value;
+        console.log(member)
         this.membersSubject.next([...members, member]);
       })
     );

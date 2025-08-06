@@ -1,6 +1,6 @@
 import {IsArray, IsDate, IsNumber, IsOptional, IsString} from 'class-validator';
 
-export class CreateEventDto {
+export class EventsListDto {
   @IsString()
   name: string;
 
@@ -15,14 +15,6 @@ export class CreateEventDto {
   @IsArray()
   @IsNumber({}, { each: true })
   teamIds?: number[];
-
-  @IsNumber()
-  clubId?: number;
-
-  @IsOptional()
-  @IsArray()
-  @IsNumber({}, { each: true })
-  presentMembersIds?: number[];
 
   @IsOptional()
   @IsArray()

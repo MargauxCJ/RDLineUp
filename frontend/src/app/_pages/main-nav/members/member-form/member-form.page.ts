@@ -95,7 +95,7 @@ export class MemberFormPage implements OnInit {
       .subscribe((member: User) => {
         this.memberForm.patchValue({
           ...member,
-          photoPreview: this.apiUrl+'users/profile-image/'+member.imgProfile
+          photoPreview: member.imgProfile ? this.apiUrl+'users/profile-image/'+member.imgProfile : null,
         });
 
         this.teams.clear();
@@ -136,7 +136,6 @@ export class MemberFormPage implements OnInit {
     }
 
     if (this.uploadedFile && userId) {
-      // Upload photo puis update membre
       this.memberStore.uploadPhoto(userId, this.uploadedFile).pipe(
         switchMap(res => updateMemberData(res.imgProfile))
       ).subscribe({
@@ -144,7 +143,6 @@ export class MemberFormPage implements OnInit {
         error: (error) => this.toastService.displayError(error),
       });
     } else {
-      // Juste update/add membre sans photo
       updateMemberData().subscribe({
         next: () => this.toastService.presentToast(this.addOrUpdate === 'update' ? 'Joueur.euse modifié.e avec succès' : 'Joueur.euse ajouté.e avec succès'),
         error: (error) => this.toastService.displayError(error),

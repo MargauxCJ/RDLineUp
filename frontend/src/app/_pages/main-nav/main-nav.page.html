@@ -5,6 +5,9 @@
         <div class="nav-item-container" [routerLink]="'dashboard'" routerLinkActive="active">
           <ion-icon name="grid"></ion-icon>
         </div>
+        <div class="nav-item-container" [routerLink]="'events'" routerLinkActive="active">
+          <ion-icon name="calendar"></ion-icon>
+        </div>
         <div class="nav-item-container" [routerLink]="'games'" routerLinkActive="active">
           <ion-icon name="flag"></ion-icon>
         </div>
@@ -14,13 +17,10 @@
         <div class="nav-item-container" [routerLink]="'stats'" routerLinkActive="active">
           <ion-icon name="stats-chart"></ion-icon>
         </div>
-        <div class="nav-item-container" [routerLink]="'events'" routerLinkActive="active">
-          <ion-icon name="stats-chart"></ion-icon>
-        </div>
       </div>
 
       <div class="nav-page-container-bottom">
-        <div class="nav-item-container-bottom" [routerLink]="'events'" routerLinkActive="active">
+        <div class="nav-item-container-bottom" [routerLink]="'settings'" routerLinkActive="active">
           <ion-icon name="settings"></ion-icon>
         </div>
       <div class="nav-item-container-bottom" (click)="authService.logout()">

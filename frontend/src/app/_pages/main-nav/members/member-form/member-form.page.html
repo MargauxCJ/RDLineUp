@@ -25,9 +25,9 @@
           <ion-row>
             <ion-col size="6">
               <div class="form-img-profile" [style.background]="
-                  memberForm.get('photoPreview')?.value ?
+                  memberForm.get('photoPreview')?.value !== null ?
                   'url('+memberForm.get('photoPreview')?.value+')'
-                  : ''">
+                  : 'unset'">
                 @if (!memberForm.get('photoPreview').value) {
                   <input type="file"
                          class="novisible"

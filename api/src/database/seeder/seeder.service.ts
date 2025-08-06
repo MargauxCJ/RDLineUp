@@ -3,6 +3,7 @@ import {DataSource} from 'typeorm';
 import {ClubSeeder} from 'src/database/seeder/seeders/club.seeder';
 import {TeamSeeder} from 'src/database/seeder/seeders/team.seeder';
 import {MemberSeeder} from 'src/database/seeder/seeders/member.seeder';
+import {EventSeeder} from 'src/database/seeder/seeders/event.seeder';
 
 @Injectable()
 export class SeederService {
@@ -10,6 +11,7 @@ export class SeederService {
     private readonly clubSeeder: ClubSeeder,
     private readonly teamSeeder: TeamSeeder,
     private readonly memberSeeder: MemberSeeder,
+    private readonly eventSeeder: EventSeeder,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -18,6 +20,7 @@ export class SeederService {
     await this.clubSeeder.run();
     await this.teamSeeder.run();
     await this.memberSeeder.run();
+    await this.eventSeeder.run();
     console.log('✅ Seeding terminé');
   }
 

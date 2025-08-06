@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {In, Repository} from 'typeorm';
+import {FindOptionsWhere, ILike, In, Repository} from 'typeorm';
 import {forkJoin, from, Observable, of, switchMap, tap} from 'rxjs';
 import { BaseService } from 'src/common/services/base.service';
 import { EventEntity } from '../entity/event.entity';
@@ -8,6 +8,9 @@ import { UserEntity } from 'src/user/entity/user.entity';
 import { MessageService } from 'src/common/services/message/message.service';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CreateEventDto} from 'src/event/entity/dto/create-event.dto';
+import {PaginatedResultDto} from 'src/common/entities/paginatedResult.dto';
+import {UsersListDto} from 'src/user/entity/dto/users-list.dto';
+import {EventsListDto} from 'src/event/entity/dto/events-list.dto';
 
 @Injectable()
 export class EventService extends BaseService<EventEntity> {
@@ -47,6 +50,33 @@ export class EventService extends BaseService<EventEntity> {
         };
         return this.create(eventData);
       }),
+    );
+  }
+
+  public findAllPaginatedWithFilters(
+    page: number = 1,
+    limit: number = 10,
+    relations: string[] = [],
+    search?: string,
+    teamId?: string,
+  ): Observable<PaginatedResultDto<EventsListDto>> {
+    const where: FindOptionsWhere<EventEntity> = {};
+
+    if (teamId) {
+      where['teams'] = { id: teamId } as any;
+    }
+
+    if (search) {
+      // Filtrer par nom (insensible à la casse)
+      where['name'] = ILike(`%${search}%`);
+    }
+
+    return this.findAllPaginated(
+      EventsListDto,
+      page,
+      limit,
+      relations,
+      where,
     );
   }
 }

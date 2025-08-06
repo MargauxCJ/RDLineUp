@@ -1,8 +1,9 @@
-import {Column, Entity, JoinTable, ManyToMany, OneToMany,} from 'typeorm';
-import {TeamEntity} from '../../team/entity/team.entity';
-import {UserEntity} from '../../user/entity/user.entity';
-import {GameEntity} from '../../game/entity/game.entity';
+import {Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany,} from 'typeorm';
+import {TeamEntity} from 'src/team/entity/team.entity';
+import {UserEntity} from 'src/user/entity/user.entity';
+import {GameEntity} from 'src/game/entity/game.entity';
 import {BaseEntity} from 'src/common/entities/base.entity';
+import {ClubEntity} from 'src/club/entity/club.entity';
 
 @Entity('event')
 export class EventEntity extends BaseEntity{
@@ -14,6 +15,10 @@ export class EventEntity extends BaseEntity{
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' , nullable: true})
   endDate: Date;
+
+  @ManyToOne(() => ClubEntity, (club) => club.teams)
+  @JoinColumn({ name: 'clubId' })
+  club: ClubEntity;
 
   @ManyToMany(() => TeamEntity, (team) => team.events, {cascade: true})
   @JoinTable()

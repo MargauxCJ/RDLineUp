@@ -36,6 +36,8 @@
             {{ element[column.label] }}
           } @else if (column.type === 'array') {
             {{ formatArrayColumn(element, column) }}
+          } @else if (column.type === 'date') {
+            {{ element[column.label]|date:'dd/MM/yyy' }}
           } @else if (column.type === 'image') {
             <div class="image-list-container" [style.background-image]="imagesService.getImgProfileEntity('users',element)"></div>
           } @else if (column.type === 'enabled') {

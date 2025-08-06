@@ -20,7 +20,7 @@ export interface EntityInterface {
 export interface ColumnConfig {
   name: string;
   label: string;
-  type: 'text' | 'array' | 'custom' | 'image' | 'enabled';
+  type: 'text' | 'array' | 'custom' | 'image' | 'enabled' | 'date';
   sublabel?: string;
 }
 

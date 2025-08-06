@@ -5,12 +5,14 @@ import {TypeOrmModule} from '@nestjs/typeorm';
 import {MessageModule} from '../common/services/message/message.module';
 import {TeamEntity} from '../team/entity/team.entity';
 import {ClubEntity} from './entity/club.entity';
+import {EventEntity} from 'src/event/entity/event.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       ClubEntity,
       TeamEntity,
+      EventEntity,
     ]),
     MessageModule,
   ],

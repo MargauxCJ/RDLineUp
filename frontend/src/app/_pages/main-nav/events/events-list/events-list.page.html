@@ -1,0 +1,20 @@
+<ion-content [fullscreen]="true" class="ion-content-padding">
+  @if (currentUser$ | async; as currentUser) {
+    <div class="header-page-container">
+      <div class="header-page-icon">
+        <h1>Evenements de {{ currentUser.teams[0]?.club?.name }}</h1>
+      </div>
+
+      <div class="header-page-buttons">
+        <ion-button mode="ios" shape="round" color="primary" [routerLink]="'./add'">Ajouter un évènement</ion-button>
+      </div>
+    </div>
+
+    <app-table
+      [displayedColumnList]="displayedColumnList"
+      [filters]="filters"
+      [itemRoute]="'/events'"
+      (loadDataEvent)="onLoadData($event.page, $event.limit, $event.filters)">
+    </app-table>
+  }
+</ion-content>
