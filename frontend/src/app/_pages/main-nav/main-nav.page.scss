@@ -5,7 +5,7 @@ $profile-img-dimension: 50px;
 $nav-item-dimension: 50px;
 
 .side-nav {
-  background-color: white;
+  background-color: var(--ion-color-dark);
   box-shadow: 0px 0px 19px rgba(0, 0, 0, 0.06);
   height: 100vh;
   width: $side-menu-height;
@@ -46,7 +46,7 @@ $nav-item-dimension: 50px;
 
       ion-icon {
         font-size: 20px;
-        color: var(--ion-color-dark);
+        color: var(--ion-color-light);
       }
     }
 
@@ -67,6 +67,7 @@ $nav-item-dimension: 50px;
       cursor: pointer;
       ion-icon {
         font-size: 20px;
+        color: var(--ion-color-light);
       }
     }
     .nav-item-container-bottom:first-child {

@@ -14,8 +14,4 @@ export const routes: Routes = [
     path: 'login',
     loadComponent: () => import('./_pages/login/login.page').then( m => m.LoginPage)
   },
-  {
-    path: 'events-list',
-    loadComponent: () => import('./_pages/main-nav/events/events-list/events-list.page').then(m => m.EventsListPage)
-  },
 ];

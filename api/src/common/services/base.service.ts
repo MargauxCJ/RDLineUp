@@ -1,16 +1,17 @@
 import {
   HttpException,
   InternalServerErrorException,
-  NotFoundException,
+  NotFoundException, UnauthorizedException,
 } from '@nestjs/common';
-import { DeepPartial, FindOptionsWhere, Repository } from 'typeorm';
+import {DeepPartial, FindOptionsWhere, In, Repository} from 'typeorm';
 import { catchError, from, map, Observable, switchMap, throwError } from 'rxjs';
 import { MessageService } from 'src/common/services/message/message.service';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import {ClassConstructor, instanceToPlain, plainToInstance} from 'class-transformer';
 import {PaginatedResultDto} from 'src/common/entities/paginatedResult.dto';
-import {join} from 'path';
+import {basename, join} from 'path';
 import * as fs from 'node:fs';
+import {UserEntity, UserRole} from 'src/user/entity/user.entity';
 
 export class BaseService<T> {
   constructor(
@@ -37,15 +38,18 @@ export class BaseService<T> {
     limit: number = 10,
     relations: string[] = [],
     where?: FindOptionsWhere<T> | FindOptionsWhere<T>[],
+    currentUser?: UserEntity,
   ): Observable<PaginatedResultDto<V>> {
     const skip = (page - 1) * limit;
+
+    const modifiedWhere = this.restrictAccessToUserScope(where, currentUser);
 
     return from(
       this.repository.findAndCount({
         skip,
         take: limit,
         relations,
-        where,
+        where: modifiedWhere,
       }),
     ).pipe(
       map(([entities, total]) => {
@@ -54,6 +58,38 @@ export class BaseService<T> {
       }),
     );
   }
+
+  protected restrictAccessToUserScope(
+    where: FindOptionsWhere<T> | FindOptionsWhere<T>[] | undefined,
+    currentUser?: UserEntity,
+  ): FindOptionsWhere<T> | FindOptionsWhere<T>[] | undefined {
+    if (!currentUser) {
+      throw new UnauthorizedException('User not authenticated');
+    }
+
+    if (currentUser.role === UserRole.ADMIN) {
+      return where;
+    }
+
+    const userTeamIds = currentUser.teams?.map(team => team.id) || [];
+
+    if (userTeamIds.length === 0) {
+      return { id: -1 } as any;
+    }
+
+    const teamFilter = { teams: { id: In(userTeamIds) } } as any;
+
+    if (!where) {
+      return teamFilter;
+    }
+
+    if (Array.isArray(where)) {
+      return where.map(w => ({ ...w, ...teamFilter }));
+    }
+
+    return { ...where, ...teamFilter };
+  }
+
 
 
   public findOneByField<K extends keyof T, R = T>(
@@ -144,7 +180,7 @@ export class BaseService<T> {
     imageField: K,
     file: Express.Multer.File,
     imageFolder: string,
-    defaultImage = 'default.jpg',
+    defaultImage?: string,
   ): Observable<{ [P in K]: string }> {
     return from(this.repository.findOneBy({ id } as any)).pipe(
       switchMap(entity => {
@@ -154,7 +190,10 @@ export class BaseService<T> {
 
         const currentImage = entity[imageField] as unknown as string;
 
-        if (currentImage && currentImage !== defaultImage) {
+        if (
+          currentImage &&
+          (!defaultImage || currentImage !== defaultImage)
+        ) {
           const oldPath = join(process.cwd(), 'uploads', imageFolder, currentImage);
           if (fs.existsSync(oldPath)) {
             fs.unlinkSync(oldPath);

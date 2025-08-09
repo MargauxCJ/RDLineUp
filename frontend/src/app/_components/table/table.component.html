@@ -9,16 +9,23 @@
         </ion-input>
     }
     @if (filter.type === 'select') {
-        <ion-select
-          fill="outline" shape="round" mode="md" label-placement="stacked" [label]="filter.label" placeholder="Recherche..."
-          interface="popover"
-          (ionChange)="onFilterChange(filter.key, $event.detail.value)"
-          [value]="filtersValues[filter.key]">
-          <ion-select-option [value]="null">Tous</ion-select-option>
-          @for (opt of filter.options; track opt) {
-            <ion-select-option [value]="opt.value">{{ opt.display }}</ion-select-option>
-          }
-        </ion-select>
+      <ion-select
+        fill="outline" shape="round" mode="md" label-placement="stacked" [label]="filter.label" placeholder="Recherche..."
+        interface="popover"
+        (ionChange)="onFilterChange(filter.key, $event.detail.value)"
+        [value]="filtersValues[filter.key]">
+        <ion-select-option [value]="null">Tous</ion-select-option>
+        @for (opt of filter.options; track opt) {
+          <ion-select-option [value]="opt.value">{{ opt.display }}</ion-select-option>
+        }
+      </ion-select>
+    }
+
+    @if (filter.type === 'checkbox') {
+      <ion-checkbox label-placement="end"
+                    [checked]="filtersValues[filter.key] || false"
+                    (ionChange)="onFilterChange(filter.key, $event.detail.checked)"
+      >{{filter.label}}</ion-checkbox>
     }
   }
   <ion-button color="danger" fill="outline" shape="round" mode="ios" (click)="clearFilters()" style="min-width: fit-content">Désactiver les filtres</ion-button>
@@ -31,7 +38,7 @@
     @for (column of displayedColumnList; track column.label) {
       <ng-container [matColumnDef]="column.label">
         <mat-header-cell *matHeaderCellDef class="email-col"> {{ column.name }}</mat-header-cell>
-        <mat-cell *matCellDef="let element" class="email-col" [routerLink]="itemRoute ? [itemRoute, element.id,'update'] : ''">
+        <mat-cell *matCellDef="let element" class="email-col" [routerLink]="itemRoute ? [itemRoute, element.id, routingPath] : ''">
           @if (column.type === 'text') {
             {{ element[column.label] }}
           } @else if (column.type === 'array') {
@@ -41,7 +48,7 @@
           } @else if (column.type === 'image') {
             <div class="image-list-container" [style.background-image]="imagesService.getImgProfileEntity('users',element)"></div>
           } @else if (column.type === 'enabled') {
-            {{element ? "activé" : "désactivé"}}
+            {{(element[column.label] === true) ? "activé" : "désactivé"}}
           } @else {
             -
           }

@@ -23,6 +23,9 @@ export class UserFormDto {
   role: UserRole;
 
   @Expose()
+  enabled: boolean;
+
+  @Expose()
   imgProfile: string;
 
   @Expose()

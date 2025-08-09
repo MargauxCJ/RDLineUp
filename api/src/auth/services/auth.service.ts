@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import {Injectable, UnauthorizedException} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Observable, from } from 'rxjs';
 import * as bcrypt from 'bcrypt';
@@ -27,4 +27,17 @@ export class AuthService {
   ): Observable<boolean> {
     return from(bcrypt.compare(newPassword, passwordHash));
   }
+
+  generateTemporaryToken(userId: number): string {
+    return this.jwtService.sign({ sub: userId }, { expiresIn: '24h' });
+  }
+
+  verifyToken(token: string): any {
+    try {
+      return this.jwtService.verify(token);
+    } catch (err) {
+      throw new UnauthorizedException('Token invalide ou expiré');
+    }
+  }
+
 }

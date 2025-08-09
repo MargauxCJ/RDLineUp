@@ -32,7 +32,6 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get('current-user')
   getCurrentUser(@CurrentUser() user: CurrentUserDto): Observable<CurrentUserDto> {
-    console.log(user);
     return this.userService.findCurrentUser(user.id);
   }
 
@@ -47,6 +46,13 @@ export class UserController {
   @Post()
   create(@Body() createUserDto: CreateUserDto): Observable<any> {
     return this.userService.createUser(createUserDto);
+  }
+
+  @Post('set-password')
+  setPassword(
+    @Body() body: { token: string; password: string },
+  ): Observable<any> {
+    return this.userService.setPasswordFromToken(body.token, body.password);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -65,16 +71,20 @@ export class UserController {
     return this.userService.findAll(UsersListDto, ['teams']);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('paginated')
   findAllPaginated(
+    @CurrentUser() currentUser: UserEntity,
     @Query() paginationQuery: PaginationQueryDto,
   ): Observable<PaginatedResultDto<UsersListDto>> {
     return this.userService.findAllPaginatedWithFilters(
+      currentUser,
       paginationQuery.page,
       paginationQuery.limit,
       ['teams'],
       paginationQuery.search,
       paginationQuery.teamId,
+      paginationQuery.status
     );
   }
 

@@ -41,14 +41,24 @@ export const routes: Route[] = [
           },
           {
             path: 'add',
-            loadComponent: () => import('./members/member-form/member-form.page').then((m) => m.MemberFormPage),
+            loadComponent: () => import('./events/event-form/event-form.page').then((m) => m.EventFormPage),
             data: {addOrUpdate: 'add'},
           },
           {
             path: ':eventId',
-            loadComponent: () => import('./members/member-form/member-form.page').then((m) => m.MemberFormPage),
-            data: {addOrUpdate: 'update'},
+            children: [
+              {
+                path: 'update',
+                loadComponent: () => import('./events/event-form/event-form.page').then((m) => m.EventFormPage),
+                data: {addOrUpdate: 'update'},
+              },
+              {
+                path: 'view',
+                loadComponent: () => import('./events/event-view/event-view.page').then((m) => m.EventViewPage),
+              },
+            ]
           },
+
         ]
       }
     ]

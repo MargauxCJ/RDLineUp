@@ -19,7 +19,7 @@ export enum MemberPosition {
 
 @Entity('member')
 export class UserEntity extends BaseEntity {
-  @Column()
+  @Column({nullable: true})
   @Exclude()
   password: string;
 

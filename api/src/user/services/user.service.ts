@@ -8,9 +8,9 @@ import {
 import { BaseService } from 'src/common/services/base.service';
 import { UserEntity } from '../entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import {FindOptionsWhere, ILike, In, Repository} from 'typeorm';
+import {DeepPartial, FindOptionsWhere, ILike, In, Repository} from 'typeorm';
 import { MessageService } from 'src/common/services/message/message.service';
-import {catchError, from, map, Observable, switchMap, throwError} from 'rxjs';
+import {catchError, from, map, Observable, of, switchMap, throwError} from 'rxjs';
 import {ClassConstructor, instanceToPlain, plainToInstance} from 'class-transformer';
 import {AuthService} from 'src/auth/services/auth.service';
 import {CreateUserDto} from 'src/user/entity/dto/create-user.dto';
@@ -20,6 +20,9 @@ import {TeamEntity} from 'src/team/entity/team.entity';
 import {PaginatedResultDto} from 'src/common/entities/paginatedResult.dto';
 import {UsersListDto} from 'src/user/entity/dto/users-list.dto';
 import {UserFormDto} from 'src/user/entity/dto/user-form.dto';
+import * as path from 'node:path';
+import * as fs from 'node:fs';
+
 
 @Injectable()
 export class UserService extends BaseService<UserEntity> {
@@ -32,6 +35,38 @@ export class UserService extends BaseService<UserEntity> {
     private authService: AuthService,
   ) {
     super(userRepository, messageService, 'User');
+  }
+
+  override updateOneByField(
+    field: keyof UserEntity,
+    value: any,
+    updateData: DeepPartial<UserEntity>,
+    notFoundMessage = 'NOT_FOUND',
+  ): Observable<any> {
+    return this.findOneByField(field, value, notFoundMessage).pipe(
+      switchMap((existingUser) => {
+        const previousImage = existingUser.imgProfile;
+        const isRemovingPhoto = updateData.imgProfile === null;
+
+        if (
+          isRemovingPhoto &&
+          previousImage
+        ) {
+          const fileName = path.basename(previousImage);
+          const oldPath = path.join(process.cwd(), 'uploads', 'users', 'profile-image', fileName);
+
+          if (fs.existsSync(oldPath)) {
+            try {
+              fs.unlinkSync(oldPath);
+            } catch (err) {
+              console.warn('❌ Erreur suppression image :', err);
+            }
+          }
+        }
+
+        return super.updateOneByField(field, value, updateData, notFoundMessage);
+      })
+    );
   }
 
   login(user: LoginDto): Observable<string> {
@@ -61,12 +96,42 @@ export class UserService extends BaseService<UserEntity> {
     );
   }
 
-  public createUser(user: CreateUserDto): Observable<any> {
-    return this.authService.hashPassword(user.password).pipe(
-      switchMap((passwordHash: string) => {
+  public createUser(user: CreateUserDto): Observable<{ user: any; token?: string }> {
+    const hasPassword = !!user.password;
+
+    const hashOrNull$ = hasPassword
+      ? this.authService.hashPassword(user.password!)
+      : of(null);
+
+    return hashOrNull$.pipe(
+      switchMap((passwordHash: string | null) => {
         const userToCreate = {
           ...user,
           password: passwordHash,
+        };
+
+        const createAndSaveUser = (teams = []) => {
+          const newUser = this.userRepository.create({
+            ...userToCreate,
+            teams,
+          });
+
+          return from(this.userRepository.save(newUser)).pipe(
+            map((savedUser) => {
+              const { password, ...userWithoutPassword } = savedUser;
+
+              let token: string | undefined;
+              if (!hasPassword) {
+                token = this.authService.generateTemporaryToken(savedUser.id);
+              }
+
+              return {
+                user: instanceToPlain(userWithoutPassword),
+                token,
+              };
+            }),
+            this.handleError<any>(),
+          );
         };
 
         if (user.teamIds && user.teamIds.length > 0) {
@@ -74,35 +139,27 @@ export class UserService extends BaseService<UserEntity> {
             this.teamRepository.find({
               where: { id: In(user.teamIds) },
             }),
-          ).pipe(
-            switchMap((teams) => {
-              const newUser = this.userRepository.create({
-                ...userToCreate,
-                teams,
-              });
-
-              return from(this.userRepository.save(newUser)).pipe(
-                map((savedUser) => {
-                  const { password, ...result } = savedUser;
-                  return instanceToPlain(result);
-                }),
-                this.handleError<any>(),
-              );
-            }),
-          );
-        } else {
-          const newUser = this.userRepository.create(userToCreate);
-          return from(this.userRepository.save(newUser)).pipe(
-            map((savedUser) => {
-              const { password, ...result } = savedUser;
-              return instanceToPlain(result);
-            }),
-            this.handleError<any>(),
-          );
+          ).pipe(switchMap((teams) => createAndSaveUser(teams)));
         }
+
+        return createAndSaveUser();
       }),
     );
   }
+
+  setPasswordFromToken(token: string, newPassword: string): Observable<any> {
+    const payload = this.authService.verifyToken(token);
+    const userId = payload.sub;
+
+    return this.authService.hashPassword(newPassword).pipe(
+      switchMap((hashedPassword) => {
+        return this.updateOneByField('id', userId, {
+          password: hashedPassword,
+        });
+      }),
+    );
+  }
+
 
 
   findCurrentUser(id: number): Observable<CurrentUserDto> {
@@ -129,16 +186,14 @@ export class UserService extends BaseService<UserEntity> {
       }),
     );
   }
-  updateProfileImage(userId: number, file: Express.Multer.File) {
+  updateProfileImage(userId: number, file: Express.Multer.File): Observable<{ imgProfile: string }> {
     return this.updateImage(
       userId,
       'imgProfile',
       file,
-      'users/profile-image',
-      'default.jpg'
+      'users/profile-image'
     );
   }
-
   getUserFormById(id: number): Observable<UserFormDto> {
     return this.findOneByField(
       'id',
@@ -175,23 +230,19 @@ export class UserService extends BaseService<UserEntity> {
   }
 
   public findAllPaginatedWithFilters(
+    currentUser: UserEntity,
     page: number = 1,
     limit: number = 10,
     relations: string[] = [],
     search?: string,
     teamId?: string,
+    status?: boolean,
   ): Observable<PaginatedResultDto<UsersListDto>> {
     const where: FindOptionsWhere<UserEntity> = {};
 
-    if (teamId) {
-      // Filtrer par équipe via relation (assure-toi que ta relation s'appelle bien 'teams')
-      where['teams'] = { id: teamId } as any;
-    }
-
-    if (search) {
-      // Filtrer par nom (insensible à la casse)
-      where['surname'] = ILike(`%${search}%`);
-    }
+    if (teamId) where['teams'] = { id: teamId } as any;
+    if (search) where['surname'] = ILike(`%${search}%`);
+    if (status !== undefined) where['enabled'] = status;
 
     return this.findAllPaginated(
       UsersListDto,
@@ -199,6 +250,7 @@ export class UserService extends BaseService<UserEntity> {
       limit,
       relations,
       where,
+      currentUser,
     );
   }
 

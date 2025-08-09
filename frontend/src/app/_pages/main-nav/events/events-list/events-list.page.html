@@ -14,6 +14,7 @@
       [displayedColumnList]="displayedColumnList"
       [filters]="filters"
       [itemRoute]="'/events'"
+      [routingPath]="'view'"
       (loadDataEvent)="onLoadData($event.page, $event.limit, $event.filters)">
     </app-table>
   }

@@ -5,7 +5,7 @@
           <ion-button [routerLink]="'/members'" fill="clear" color="dark">
             <ion-icon name="chevron-back"></ion-icon>
           </ion-button>
-          @if (member$|async; as member) {
+          @if (memberStore.selectedMember$|async; as member) {
             <h1>{{ member.surname }}</h1>
           } @else {
             <h1>Créer un.e membre</h1>
@@ -14,7 +14,14 @@
         </div>
 
         <div class="header-page-buttons">
-          <ion-button mode="ios" shape="round" color="danger" fill="outline">Désactiver</ion-button>
+          @if (addOrUpdate === 'update') {
+            @if((memberStore.selectedMember$|async)?.enabled === true; as member) {
+              <ion-button mode="ios" shape="round" color="danger" id="enabled-modal" fill="outline" (click)="openDisableModal()">Désactiver</ion-button>
+            } @else {
+            <ion-button mode="ios" shape="round" color="success" fill="outline" (click)="enableMember()">Activer</ion-button>
+            }
+          }
+
           <ion-button mode="ios" shape="round" color="primary" type="submit">Enregistrer</ion-button>
         </div>
 
@@ -23,7 +30,7 @@
       <ion-card class="card-form">
         <ion-grid>
           <ion-row>
-            <ion-col size="6">
+            <ion-col size="6" class="image-upload-container">
               <div class="form-img-profile" [style.background]="
                   memberForm.get('photoPreview')?.value !== null ?
                   'url('+memberForm.get('photoPreview')?.value+')'
@@ -38,21 +45,22 @@
                   <label for="member_upload" class="container-click-input">
                     <ion-icon name="camera-outline"></ion-icon>
                   </label>
-                } @else {
-                  <div class="button-container">
-                    <input type="file"
-                           class="novisible"
-                           id="member_upload_edit"
-                           (change)="handleUpload($event)"
-                           accept="image/jpeg, image/png"
-                           #inputElement>
-                    <label for="member_upload_edit">
-                      <div class="false-edit-button"><ion-icon name="pencil-outline"></ion-icon></div>
-                    </label>
-                    <ion-button color="danger" (click)="deleteUploadPhoto()"><ion-icon name="trash-outline"></ion-icon></ion-button>
-                  </div>
                 }
               </div>
+              @if(memberForm.get('photoPreview').value) {
+                <div class="button-container">
+                  <input type="file"
+                         class="novisible"
+                         id="member_upload_edit"
+                         (change)="handleUpload($event)"
+                         accept="image/jpeg, image/png"
+                         #inputElement>
+                  <label for="member_upload_edit">
+                    <div class="false-edit-button"><ion-icon name="pencil-outline"></ion-icon></div>
+                  </label>
+                  <ion-button color="danger" (click)="deleteUploadPhoto()"><ion-icon name="trash-outline"></ion-icon></ion-button>
+                </div>
+              }
             </ion-col>
             <ion-col size="6">
             </ion-col>
@@ -96,7 +104,7 @@
                 <ion-row>
                   <ion-col size="10" [formArrayName]="'teams'">
                     <ion-select
-                      fill="outline" shape="round" mode="md" label-placement="stacked" placeholder="Sélectionner une équip" [label]="'Equipe'"
+                      fill="outline" shape="round" mode="md" label-placement="stacked" placeholder="Sélectionner une équipe" [label]="'Equipe'"
                       interface="popover"
                       [formControlName]="i">
                       @for (objectionableTeam of getAvailableTeams(i); track objectionableTeam) {
@@ -119,5 +127,6 @@
         </ion-grid>
       </ion-card>
     </form>
-
 </ion-content>
+
+

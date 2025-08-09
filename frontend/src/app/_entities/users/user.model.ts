@@ -15,6 +15,7 @@ export interface UserInterface extends EntityInterface {
   teams: Team[];
   events: Event[];
   games: Game[];
+  enabled: boolean;
 }
 
 export class User extends AbstractEntity implements UserInterface {
@@ -28,6 +29,7 @@ export class User extends AbstractEntity implements UserInterface {
   public teams: Team[];
   public events: Event[];
   public games: Game[];
+  enabled: boolean;
 
   public static override getEntityName(): 'user' {
     return 'user';

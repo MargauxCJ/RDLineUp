@@ -5,6 +5,7 @@ $border-style: 0.5px solid var(--ion-color-list);
   display: flex;
   flex-direction: row;
   gap: 24px;
+  align-items: center;
 
   ion-input, ion-select {
     --background: white;

@@ -12,6 +12,9 @@ export class MemberStoreService {
   private membersSubject = new BehaviorSubject<User[]>([]);
   public members$ = this.membersSubject.asObservable();
 
+  private selectedMemberSubject = new BehaviorSubject<User | null>(null);
+  public selectedMember$ = this.selectedMemberSubject.asObservable();
+
   private paginationSubject = new BehaviorSubject<{ total: number; page: number; limit: number }>({ total: 0, page: 1, limit: 10 });
   public pagination$ = this.paginationSubject.asObservable();
 
@@ -34,6 +37,14 @@ export class MemberStoreService {
           members[index] = member;
           this.membersSubject.next([...members]);
         }
+      })
+    );
+  }
+
+  loadMember(memberId: string): Observable<User> {
+    return this.memberService.getOne(memberId, 'users').pipe(
+      tap((member: User) => {
+        this.selectedMemberSubject.next(member);
       })
     );
   }
@@ -63,5 +74,12 @@ export class MemberStoreService {
         }
       })
     );
+  }
+
+  refreshMember(memberId: string): void {
+    this.memberService.getOne(memberId, 'users').subscribe((member: User) => {
+      const updated = { ...member } as User;
+      this.selectedMemberSubject.next(updated);
+    });
   }
 }

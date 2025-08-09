@@ -34,7 +34,8 @@ export class MembersListPage implements OnInit {
 
   public filters: FilterConfig[] = [
     { label: 'Nom', key: 'search', type: 'text' },
-    { label: 'Équipe(s)', key: 'teamId', type: 'select', options: [] }
+    { label: 'Équipe(s)', key: 'teamId', type: 'select', options: [] },
+    { label: 'Exclure les joueur.euse.s désactivé.e.s', key: 'status', type: 'checkbox', default : true}
   ];
 
   constructor(

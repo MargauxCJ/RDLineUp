@@ -9,7 +9,15 @@ import { addIcons } from 'ionicons';
 import { chevronForward, close, search } from 'ionicons/icons';
 import { RouterLink } from '@angular/router';
 import { debounceTime, Subject } from 'rxjs';
-import { IonButton, IonCard, IonIcon, IonInput, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
+import {
+  IonButton,
+  IonCard,
+  IonCheckbox,
+  IonIcon,
+  IonInput,
+  IonSelect,
+  IonSelectOption
+} from '@ionic/angular/standalone';
 import { ImagesService } from '../../_services/images.service';
 
 export interface EntityInterface {
@@ -27,8 +35,9 @@ export interface ColumnConfig {
 export interface FilterConfig {
   label: string;
   key: string;
-  type: 'text' | 'select';
+  type: 'text' | 'select' | 'checkbox';
   options?: { value: any; display: string }[];
+  default?: string|boolean;
 }
 
 @Component({
@@ -50,12 +59,14 @@ export interface FilterConfig {
     IonButton,
     IonSelect,
     IonSelectOption,
+    IonCheckbox,
   ]
 })
 export class TableComponent<Entity extends EntityInterface> implements OnInit {
   @Input() displayedColumnList: ColumnConfig[] = [];
   @Input() filters: FilterConfig[] = [];
   @Input() itemRoute: string;
+  @Input() routingPath: 'view' | 'update' = 'update';
 
   @Output() loadDataEvent = new EventEmitter<{ page: number; limit: number; filters: { [key: string]: any } }>();
 
@@ -75,13 +86,18 @@ export class TableComponent<Entity extends EntityInterface> implements OnInit {
   }
 
   ngOnInit() {
+    this.filters.forEach(filter => {
+      if (filter.default !== undefined) {
+        this.filtersValues[filter.key] = filter.default;
+      }
+    });
+
     this.textFilterSubject.pipe(debounceTime(400)).subscribe(({ key, value }) => {
       this.filtersValues[key] = value;
       this.page = 1;
       this.emitLoadData();
     });
 
-    // Initial load
     this.emitLoadData();
   }
 
@@ -123,15 +139,21 @@ export class TableComponent<Entity extends EntityInterface> implements OnInit {
 
     if (filter?.type === 'text') {
       this.textFilterSubject.next({ key, value });
+    } else if (filter?.type === 'checkbox') {
+      if (value === true) {
+        this.filtersValues[key] = true;
+      } else {
+        delete this.filtersValues[key];
+      }
     } else {
       if (value === null || value === undefined || value === '') {
         delete this.filtersValues[key];
       } else {
         this.filtersValues[key] = value;
       }
-      this.page = 1;
-      this.emitLoadData();
     }
+    this.page = 1;
+    this.emitLoadData();
   }
 
   clearFilters() {

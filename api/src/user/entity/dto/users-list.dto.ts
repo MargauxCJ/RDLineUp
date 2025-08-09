@@ -20,6 +20,9 @@ export class UsersListDto {
   jerseyNum: string;
 
   @Expose()
+  enabled: boolean;
+
+  @Expose()
   role: UserRole;
 
   @Expose()
